@@ -48,6 +48,7 @@ public class VanillaPreviewRenderer extends BasePreviewRenderer {
     RenderSystem.enableDepthTest();
     this.drawBackground(x, y, this.getColumnCount(), this.getRowCount(), poseStack);
     this.drawItems(x, y, poseStack, font, itemRenderer);
+    this.drawSlotHighlight(x, y, poseStack, mouseX, mouseY);
     this.drawInnerTooltip(x, y, poseStack, screen, mouseX, mouseY);
   }
 
