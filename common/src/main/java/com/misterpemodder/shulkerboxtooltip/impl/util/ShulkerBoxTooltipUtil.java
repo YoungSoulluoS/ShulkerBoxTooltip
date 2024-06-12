@@ -8,7 +8,7 @@ public final class ShulkerBoxTooltipUtil {
   }
 
   public static ResourceLocation id(String id) {
-    return new ResourceLocation(ShulkerBoxTooltip.MOD_ID, id);
+    return ResourceLocation.fromNamespaceAndPath(ShulkerBoxTooltip.MOD_ID, id);
   }
 
   public static String abbreviateInteger(int count) {

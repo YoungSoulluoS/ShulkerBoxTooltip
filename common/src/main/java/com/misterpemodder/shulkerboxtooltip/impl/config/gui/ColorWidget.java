@@ -13,8 +13,9 @@ import java.util.function.IntSupplier;
 
 @Environment(EnvType.CLIENT)
 public class ColorWidget extends AbstractWidget {
-  private static final WidgetSprites SPRITES = new WidgetSprites(new ResourceLocation("widget/text_field"),
-      new ResourceLocation("widget/text_field_highlighted"));
+  private static final WidgetSprites SPRITES = new WidgetSprites(
+      ResourceLocation.withDefaultNamespace("widget/text_field"),
+      ResourceLocation.withDefaultNamespace("widget/text_field_highlighted"));
 
   private final AbstractWidget neighbor;
   private final IntSupplier colorSupplier;

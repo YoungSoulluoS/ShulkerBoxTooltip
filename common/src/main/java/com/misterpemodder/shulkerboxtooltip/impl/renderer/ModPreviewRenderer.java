@@ -1,7 +1,9 @@
 package com.misterpemodder.shulkerboxtooltip.impl.renderer;
 
+import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
 import com.misterpemodder.shulkerboxtooltip.api.PreviewType;
 import com.misterpemodder.shulkerboxtooltip.api.color.ColorKey;
+import com.misterpemodder.shulkerboxtooltip.impl.util.ShulkerBoxTooltipUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -9,10 +11,11 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 
+import static com.misterpemodder.shulkerboxtooltip.impl.util.ShulkerBoxTooltipUtil.id;
+
 @Environment(EnvType.CLIENT)
 public class ModPreviewRenderer extends BasePreviewRenderer {
-  private static final ResourceLocation DEFAULT_TEXTURE_LIGHT = new ResourceLocation("shulkerboxtooltip",
-      "textures/gui/shulker_box_tooltip.png");
+  private static final ResourceLocation DEFAULT_TEXTURE_LIGHT = id("textures/gui/shulker_box_tooltip.png");
   public static final ModPreviewRenderer INSTANCE = new ModPreviewRenderer();
 
   ModPreviewRenderer() {

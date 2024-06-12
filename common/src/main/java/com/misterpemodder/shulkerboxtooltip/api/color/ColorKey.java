@@ -186,8 +186,9 @@ public interface ColorKey {
   }
 
   private static ColorKey ofDye(DyeColor dye) {
-    var color = dye.getTextureDiffuseColors();
-    var clamped = new float[] {Math.max(0.15f, color[0]), Math.max(0.15f, color[1]), Math.max(0.15f, color[2])};
+    var color = dye.getTextureDiffuseColor();
+    var clamped = new float[] {Math.max(0.15f, ((color >> 16) & 0xff) / 255f), Math.max(0.15f,
+        ((color >> 8) & 0xff) / 255f), Math.max(0.15f, (color & 0xff) / 255f)};
     return new ColorKeyImpl(Arrays.copyOf(clamped, 3), clamped);
   }
 }
