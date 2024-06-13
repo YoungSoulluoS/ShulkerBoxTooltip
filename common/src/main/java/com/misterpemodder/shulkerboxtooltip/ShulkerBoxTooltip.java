@@ -8,6 +8,7 @@ import com.misterpemodder.shulkerboxtooltip.impl.config.Configuration;
 import com.misterpemodder.shulkerboxtooltip.impl.config.ConfigurationHandler;
 import com.misterpemodder.shulkerboxtooltip.impl.network.ServerNetworking;
 import com.misterpemodder.shulkerboxtooltip.impl.provider.*;
+import com.misterpemodder.shulkerboxtooltip.impl.tree.RootConfigNode;
 import com.misterpemodder.shulkerboxtooltip.impl.util.NamedLogger;
 import com.misterpemodder.shulkerboxtooltip.impl.util.ShulkerBoxTooltipUtil;
 import dev.architectury.injectables.annotations.ExpectPlatform;
@@ -38,10 +39,13 @@ public class ShulkerBoxTooltip implements ShulkerBoxTooltipApi {
    * the actual config object, its values are never synced.
    */
   public static Configuration savedConfig;
+  public static RootConfigNode<Configuration> configTree;
 
   public static void init() {
+    configTree = RootConfigNode.create(new Configuration());
     savedConfig = ConfigurationHandler.register();
-    config = ConfigurationHandler.copyOf(savedConfig);
+    config = new Configuration();
+    configTree.copy(savedConfig, config);
     ServerNetworking.init();
   }
 

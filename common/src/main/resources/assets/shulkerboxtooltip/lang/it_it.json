@@ -26,7 +26,7 @@
   "text.autoconfig.shulkerboxtooltip.option.preview.serverIntegration": "Integrazione Server",
   "text.autoconfig.shulkerboxtooltip.option.preview.serverIntegration.tooltip": "Se attiva, il client manderà pacchetti al server\nper visualizzare anteprime aggiuntive\ncome per le ender chest.",
   "text.autoconfig.shulkerboxtooltip.option.preview.theme": "Tema",
-  "text.autoconfig.shulkerboxtooltip.option.preview.theme.tooltip": "Il tema utilizzato nella schermata di anteprima.\nShulkerBoxTooltip:\n Il tema predefinito di ShulkerBoxTooltip.\nVanilla:\n Imita lo stile vanilla.\n",
+  "text.autoconfig.shulkerboxtooltip.option.preview.theme.tooltip": "Il tema utilizzato nella schermata di anteprima.\nShulkerBoxTooltip:\n Il tema predefinito di ShulkerBoxTooltip.\nVanilla:\n Imita lo stile vanilla.",
   "text.autoconfig.shulkerboxtooltip.option.preview.position": "Posizione Anteprima",
   "text.autoconfig.shulkerboxtooltip.option.preview.position.tooltip": "La posizione dell'anteprima.\nInterna:\n Dentro l'item tooltip.\nEsterna:\n Fuori dall'item tooltip, si sposta in base ai bordi dello schermo.\nEsterna (sopra):\n Sempre sopra all'item tooltip.\nEsterna (sotto):\n Sempre sotto all'item's tooltip.",
   "text.autoconfig.shulkerboxtooltip.option.preview.shortItemCounts": "Abbrevia grandi quantità di item",

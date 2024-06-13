@@ -25,10 +25,3 @@ mandatory = true
 versionRange = "[1.20.6,)"
 ordering = "NONE"
 side = "BOTH"
-
-[[dependencies.shulkerboxtooltip]]
-modId = "cloth_config"
-mandatory = true
-versionRange = "[14.0.0,)"
-ordering = "NONE"
-side = "BOTH"

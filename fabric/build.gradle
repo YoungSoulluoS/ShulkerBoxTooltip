@@ -35,18 +35,16 @@ dependencies {
         exclude(group: 'net.fabricmc.fabric-api')
     }
 
-    // Cloth-Config
-    modImplementation("me.shedaniel.cloth:cloth-config-fabric:${rootProject.clothConfigVersion}") {
-        exclude(group: 'net.fabricmc.fabric-api')
-    }
-    include "me.shedaniel.cloth:cloth-config-fabric:${rootProject.clothConfigVersion}"
-
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowCommon(project(path: ':common', configuration: 'transformProductionFabric')) { transitive false }
 
     // Nullable annotations.
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'org.jetbrains:annotations:23.0.0'
+
+    // Jankson
+    implementation "blue.endless:jankson:${rootProject.janksonVersion}"
+    shadowCommon "blue.endless:jankson:${rootProject.janksonVersion}"
 }
 
 processResources {
@@ -60,13 +58,15 @@ processResources {
 shadowJar {
     exclude 'architectury.common.json'
 
+    relocate 'blue.endless.jankson', "${rootProject.group}.shulkerboxtooltip.shadowed.blue.endless.jankson"
+
     configurations = [project.configurations.shadowCommon]
     archiveClassifier.set('dev-shadow')
 }
 
 remapJar {
     injectAccessWidener = true
-    input.set shadowJar.archiveFile
+    inputFile = shadowJar.archiveFile
     dependsOn shadowJar
     archiveClassifier.set(null)
 }
@@ -159,7 +159,6 @@ curseforge {
         }
         relations {
             requiredDependency 'fabric-api'
-            embeddedLibrary 'cloth-config'
             optionalDependency 'modmenu'
         }
     }
@@ -191,6 +190,5 @@ modrinth {
     dependencies {
         required.project 'P7dR8mSH' // fabric-api
         optional.project 'mOgUt4GM' // modmenu
-        embedded.project '9s6osm5g' // cloth-config-api
     }
 }

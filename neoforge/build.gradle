@@ -1,5 +1,5 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
     id 'com.modrinth.minotaur' version '2.+'
 }
@@ -29,15 +29,16 @@ configurations {
 dependencies {
     neoForge "net.neoforged:neoforge:${rootProject.neoForgeVersion}"
 
-    // Cloth-Config
-    modApi("me.shedaniel.cloth:cloth-config-neoforge:${rootProject.clothConfigVersion}")
-
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
-    shadowCommon(project(path: ':common', configuration: 'transformProductionNeoForge')) { transitive = false }
+    shadowCommon(project(path: ':common', configuration: 'transformProductionNeoForge')) { transitive false }
 
     // Nullable annotations.
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'org.jetbrains:annotations:23.0.0'
+
+    // Jankson
+    modLocalRuntime("blue.endless:jankson:${rootProject.janksonVersion}")
+    forgeRuntimeLibrary(shadowCommon("blue.endless:jankson:${rootProject.janksonVersion}"))
 }
 
 processResources {
@@ -52,12 +53,14 @@ shadowJar {
     exclude 'fabric.mod.json'
     exclude 'architectury.common.json'
 
+    relocate 'blue.endless.jankson', "${rootProject.group}.shulkerboxtooltip.shadowed.blue.endless.jankson"
+
     configurations = [project.configurations.shadowCommon]
     archiveClassifier.set('dev-shadow')
 }
 
 remapJar {
-    input.set shadowJar.archiveFile
+    inputFile = shadowJar.archiveFile
     dependsOn shadowJar
     archiveClassifier.set(null)
 }
@@ -147,9 +150,6 @@ curseforge {
         mainArtifact(remapJar) {
             displayName = "[NeoForge $project.mcVersionFull] v${project.version}"
         }
-        relations {
-            requiredDependency 'cloth-config'
-        }
     }
     options {
         forgeGradleIntegration = false
@@ -176,7 +176,4 @@ modrinth {
     gameVersions = hostGameVersions.split(',').toList()
     loaders = ['neoforge']
     debugMode = project.projectBaseVersion.contains('SNAPSHOT')
-    dependencies {
-        required.project '9s6osm5g' // cloth-config-api
-    }
 }

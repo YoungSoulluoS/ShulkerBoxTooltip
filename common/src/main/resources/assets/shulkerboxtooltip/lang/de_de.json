@@ -28,7 +28,7 @@
   "text.autoconfig.shulkerboxtooltip.option.preview.serverIntegration": "Server-Integration",
   "text.autoconfig.shulkerboxtooltip.option.preview.serverIntegration.tooltip": "Wenn aktiviert, wird der Client versuchen, Pakete an den Server\nzu senden, um zusätzliche Vorschau-Informationen\nwie Ender-Kistenvorschau zu ermöglichen.",
   "text.autoconfig.shulkerboxtooltip.option.preview.theme": "Design",
-  "text.autoconfig.shulkerboxtooltip.option.preview.theme.tooltip": "Das Design für Vorschau-Fenster.\nShulkerBoxTooltip:\n ShulkerBoxTooltip's Standard-Look und Feel.\nVanilla:\n Immitiert den Stil der Vanilla-Vorschau.\n",
+  "text.autoconfig.shulkerboxtooltip.option.preview.theme.tooltip": "Das Design für Vorschau-Fenster.\nShulkerBoxTooltip:\n ShulkerBoxTooltip's Standard-Look und Feel.\nVanilla:\n Immitiert den Stil der Vanilla-Vorschau.",
   "text.autoconfig.shulkerboxtooltip.option.preview.position": "Fensterposition",
   "text.autoconfig.shulkerboxtooltip.option.preview.position.tooltip": "Die Position des Vorschaufensters.\nInnen:\n Innerhalb der QuickInfo des Elements.\nAußerhalb:\n Außerhalb der QuickInfo des Elements, verschiebt sich abhängig von den Bildschirmrändern.\nAußerhalb (oben):\n Immer am oberen Rand der QuickInfo des Elements.\nAußerhalb (unten):\n Immer am unteren Rand der QuickInfo des Elements.",
   "text.autoconfig.shulkerboxtooltip.option.preview.shortItemCounts": "Große Artikelanzahl abkürzen",

@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 public final class Key {
@@ -20,6 +21,10 @@ public final class Key {
 
   public InputConstants.Key get() {
     return this.inner;
+  }
+
+  public boolean isUnbound() {
+    return this.inner.equals(InputConstants.UNKNOWN);
   }
 
   public void set(InputConstants.Key key) {
@@ -55,5 +60,20 @@ public final class Key {
     } catch (Exception e) {
       return UNKNOWN_KEY;
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    Key key = (Key) o;
+    return Objects.equals(this.inner, key.inner);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(inner);
   }
 }

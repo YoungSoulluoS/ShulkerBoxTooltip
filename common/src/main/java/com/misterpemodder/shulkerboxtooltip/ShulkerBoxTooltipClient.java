@@ -188,7 +188,7 @@ public class ShulkerBoxTooltipClient {
   }
 
   private static boolean isKeyPressed(@Nullable Key key) {
-    if (key == null || key.equals(Key.UNKNOWN_KEY) || key.get().equals(InputConstants.UNKNOWN))
+    if (key == null || key.equals(Key.UNKNOWN_KEY) || key.isUnbound())
       return false;
     return InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), key.get().getValue());
   }

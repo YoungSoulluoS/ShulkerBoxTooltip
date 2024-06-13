@@ -1,20 +1,16 @@
 package com.misterpemodder.shulkerboxtooltip.impl.config;
 
+import blue.endless.jankson.Jankson;
+import blue.endless.jankson.JsonObject;
+import blue.endless.jankson.JsonPrimitive;
+import blue.endless.jankson.api.Marshaller;
+import blue.endless.jankson.api.SyntaxError;
 import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
 import com.misterpemodder.shulkerboxtooltip.api.color.ColorKey;
 import com.misterpemodder.shulkerboxtooltip.api.color.ColorRegistry;
 import com.misterpemodder.shulkerboxtooltip.impl.PluginManager;
 import com.misterpemodder.shulkerboxtooltip.impl.color.ColorRegistryImpl;
-import com.misterpemodder.shulkerboxtooltip.impl.config.Configuration.*;
 import com.misterpemodder.shulkerboxtooltip.impl.util.Key;
-import me.shedaniel.autoconfig.annotation.Config;
-import me.shedaniel.autoconfig.serializer.ConfigSerializer;
-import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Jankson;
-import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.JsonObject;
-import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.JsonPrimitive;
-import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.api.DeserializationException;
-import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.api.Marshaller;
-import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.api.SyntaxError;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resources.ResourceLocation;
@@ -24,73 +20,25 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/**
- * Modified version of JanksonConfigSerializer from AutoConfig
- */
-public class ShulkerBoxTooltipConfigSerializer implements ConfigSerializer<Configuration> {
-  private final Config definition;
+public final class ShulkerBoxTooltipConfigSerializer {
   private final Jankson jankson;
 
-  public ShulkerBoxTooltipConfigSerializer(Config definition, Class<?> configClass) {
-    this(definition, configClass, buildJankson());
+  private static final String CONFIG_FILE_NAME = "shulkerboxtooltip.json5";
+
+  public ShulkerBoxTooltipConfigSerializer() {
+    this.jankson = this.buildJankson();
   }
 
-  @SuppressWarnings("unused")
-  protected ShulkerBoxTooltipConfigSerializer(Config definition, Class<?> configClass, Jankson jankson) {
-    this.definition = definition;
-    this.jankson = jankson;
-  }
-
-  private static Jankson buildJankson() {
+  private Jankson buildJankson() {
     Jankson.Builder builder = Jankson.builder();
 
-    builder.registerDeserializer(JsonObject.class, Configuration.class, ShulkerBoxTooltipConfigSerializer::fromJson);
-    builder.registerSerializer(Configuration.class, ShulkerBoxTooltipConfigSerializer::toJson);
     if (ShulkerBoxTooltip.isClient())
       ClientOnly.buildJankson(builder);
     return builder.build();
   }
 
-  private static Configuration fromJson(JsonObject obj, Marshaller marshaller) {
-    var cfg = new Configuration();
-    var previewCategory = marshaller.marshall(PreviewCategory.class, obj.getObject("preview"));
-    var tooltipCategory = marshaller.marshall(TooltipCategory.class, obj.getObject("tooltip"));
-    var serverCategory = marshaller.marshall(ServerCategory.class, obj.getObject("server"));
-
-    if (previewCategory != null)
-      cfg.preview = previewCategory;
-    if (tooltipCategory != null)
-      cfg.tooltip = tooltipCategory;
-    if (serverCategory != null)
-      cfg.server = serverCategory;
-    if (ShulkerBoxTooltip.isClient()) {
-      var colorsCategory = marshaller.marshall(ColorsCategory.class, obj.getObject("colors"));
-      var controlsCategory = marshaller.marshall(ControlsCategory.class, obj.getObject("controls"));
-
-      if (colorsCategory != null)
-        cfg.colors = colorsCategory;
-      if (controlsCategory != null)
-        cfg.controls = controlsCategory;
-    }
-    return cfg;
-  }
-
-  private static JsonObject toJson(Configuration cfg, Marshaller marshaller) {
-    var obj = new JsonObject();
-
-    obj.put("preview", marshaller.serialize(cfg.preview));
-    obj.put("tooltip", marshaller.serialize(cfg.tooltip));
-    if (ShulkerBoxTooltip.isClient()) {
-      obj.put("colors", marshaller.serialize(cfg.colors));
-      obj.put("controls", marshaller.serialize(cfg.controls));
-    }
-    obj.put("server", marshaller.serialize(cfg.server));
-    return obj;
-  }
-
-  @Override
   public void serialize(Configuration config) throws SerializationException {
-    Path configPath = getConfigPath();
+    Path configPath = this.getConfigPath();
 
     ShulkerBoxTooltip.LOGGER.debug("Saving configuration to " + configPath);
     try {
@@ -116,29 +64,26 @@ public class ShulkerBoxTooltipConfigSerializer implements ConfigSerializer<Confi
     }
   }
 
-  private Path getConfigPath() {
-    return ShulkerBoxTooltip.getConfigDir().resolve(definition.name() + ".json5");
-  }
-
-  @Override
   public Configuration deserialize() throws SerializationException {
-    Path configPath = getConfigPath();
+    Path configPath = this.getConfigPath();
 
     if (Files.exists(configPath)) {
       try {
         var obj = this.jankson.load(configPath.toFile());
-        return this.jankson.fromJsonCarefully(obj, Configuration.class);
-      } catch (IOException | SyntaxError | DeserializationException e) {
+        var config = this.jankson.fromJson(obj, Configuration.class);
+        if (config == null)
+          throw new SerializationException("Failed to deserialize configuration");
+        return config;
+      } catch (IOException | SyntaxError e) {
         throw new SerializationException(e);
       }
     }
     ShulkerBoxTooltip.LOGGER.info("Could not find configuration file, creating default file");
-    return createDefault();
+    return new Configuration();
   }
 
-  @Override
-  public Configuration createDefault() {
-    return new Configuration();
+  private Path getConfigPath() {
+    return ShulkerBoxTooltip.getConfigDir().resolve(CONFIG_FILE_NAME);
   }
 
   @Environment(EnvType.CLIENT)

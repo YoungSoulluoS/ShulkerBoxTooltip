@@ -28,7 +28,8 @@ public record S2CHandshakeResponse(@Nullable ProtocolVersion serverVersion, Conf
     @Override
     public S2CHandshakeResponse decode(FriendlyByteBuf buf) {
       ProtocolVersion serverVersion = ProtocolVersion.readFromPacketBuf(buf);
-      Configuration config = ConfigurationHandler.copyOf(ShulkerBoxTooltip.config);
+      var config = new Configuration();
+      ShulkerBoxTooltip.configTree.copy(ShulkerBoxTooltip.config, config);
 
       if (serverVersion != null && serverVersion.major() == ProtocolVersion.CURRENT.major()) {
         try {

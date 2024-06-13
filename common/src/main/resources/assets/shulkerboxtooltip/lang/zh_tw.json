@@ -26,7 +26,7 @@
   "text.autoconfig.shulkerboxtooltip.option.preview.serverIntegration": "伺服器整合",
   "text.autoconfig.shulkerboxtooltip.option.preview.serverIntegration.tooltip": "若啟用，用戶端將嘗試向伺服器發送封包\n以允許更多預覽資訊\n例如終界箱預覽。",
   "text.autoconfig.shulkerboxtooltip.option.preview.theme": "主題",
-  "text.autoconfig.shulkerboxtooltip.option.preview.theme.tooltip": "預覽視窗的主題。\n界伏盒提示框：\n界伏盒提示框的預設樣式。\n原版：\n模仿原版束口袋預覽的樣式。\n",
+  "text.autoconfig.shulkerboxtooltip.option.preview.theme.tooltip": "預覽視窗的主題。\n界伏盒提示框：\n界伏盒提示框的預設樣式。\n原版：\n模仿原版束口袋預覽的樣式。",
   "text.autoconfig.shulkerboxtooltip.option.preview.position": "視窗位置",
   "text.autoconfig.shulkerboxtooltip.option.preview.position.tooltip": "預覽視窗的位置。\n裡面：\n在物品的提示框內。\n外面：\n在物品的提示框外，會根據螢幕邊緣移動。\n外面（頂部）：\n始終位於物品提示框的頂部。\n外面（底部）：\n始終位於物品提示框的底部。",
   "text.autoconfig.shulkerboxtooltip.option.preview.shortItemCounts": "縮寫大量物品數量",

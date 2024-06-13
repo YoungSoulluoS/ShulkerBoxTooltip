@@ -38,7 +38,7 @@ public class ClientNetworking {
       PluginManager.loadColors();
       PluginManager.loadProviders();
     });
-    ShulkerBoxTooltip.config = ConfigurationHandler.copyOf(ShulkerBoxTooltip.savedConfig);
+    ShulkerBoxTooltip.configTree.copy(ShulkerBoxTooltip.savedConfig, ShulkerBoxTooltip.config);
 
     // Re-init some config values before syncing
     serverProtocolVersion = null;

@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
 import com.misterpemodder.shulkerboxtooltip.api.color.ColorKey;
 import com.misterpemodder.shulkerboxtooltip.api.color.ColorRegistry;
-import com.misterpemodder.shulkerboxtooltip.impl.util.ShulkerBoxTooltipUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resources.ResourceLocation;
@@ -15,6 +14,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static com.misterpemodder.shulkerboxtooltip.impl.util.ShulkerBoxTooltipUtil.id;
 
 @Environment(EnvType.CLIENT)
 public final class ColorRegistryImpl implements ColorRegistry {
@@ -48,7 +49,7 @@ public final class ColorRegistryImpl implements ColorRegistry {
   @Override
   @Nonnull
   public ColorRegistry.Category defaultCategory() {
-    return this.category(ShulkerBoxTooltipUtil.id("default"));
+    return this.category(id("default"));
   }
 
   @Override

@@ -1,7 +1,7 @@
 package com.misterpemodder.shulkerboxtooltip.impl.config;
 
-import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.JsonGrammar;
-import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.JsonPrimitive;
+import blue.endless.jankson.JsonGrammar;
+import blue.endless.jankson.JsonPrimitive;
 
 /**
  * Helper class to write hex ints to the JSON output, for serialization uses only.

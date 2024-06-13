@@ -26,7 +26,7 @@
   "text.autoconfig.shulkerboxtooltip.option.preview.serverIntegration": "Sunucu Entegrasyonu",
   "text.autoconfig.shulkerboxtooltip.option.preview.serverIntegration.tooltip": "Açık ise; istemci, ender sandığının içini görebilmek gibi\n ekstra önizleme bilgilerine izin vermek adına\nsunucuya paket göndermeyi deneyecek.",
   "text.autoconfig.shulkerboxtooltip.option.preview.theme": "Tema",
-  "text.autoconfig.shulkerboxtooltip.option.preview.theme.tooltip": "Önizleme pencereleri için kullanılacak tema.\nShulkerBoxTooltip:\n ShulkerBoxTooltip'in varsayılan görünümü ve hissi.\nVanilla:\n Vanilya paket önizlemelerinin stilini taklit eder.\n",
+  "text.autoconfig.shulkerboxtooltip.option.preview.theme.tooltip": "Önizleme pencereleri için kullanılacak tema.\nShulkerBoxTooltip:\n ShulkerBoxTooltip'in varsayılan görünümü ve hissi.\nVanilla:\n Vanilya paket önizlemelerinin stilini taklit eder.",
   "text.autoconfig.shulkerboxtooltip.option.preview.position": "Pencere Konumu",
   "text.autoconfig.shulkerboxtooltip.option.preview.position.tooltip": "Önizleme penceresinin konumu.\nİçinde:\n Eşyanın tooltip'inin içinde.\nDışarıda:\n Eşyanın tooltip'inin dışında, ekran sınırlarına bağlı olarak hareket eder.\nDışarıda (üstte):\n Her zaman öğenin araç ipucunun en üstünde.\nDışarıda (altta):\n Her zaman öğenin araç ipucunun alt kısmında.",
   "text.autoconfig.shulkerboxtooltip.option.preview.shortItemCounts": "Büyük öğe sayılarını kısaltın",

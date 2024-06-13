@@ -3,6 +3,7 @@ package com.misterpemodder.shulkerboxtooltip.impl;
 import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
 import com.misterpemodder.shulkerboxtooltip.api.ShulkerBoxTooltipApi;
 import com.misterpemodder.shulkerboxtooltip.impl.color.ColorRegistryImpl;
+import com.misterpemodder.shulkerboxtooltip.impl.config.Configuration;
 import com.misterpemodder.shulkerboxtooltip.impl.provider.PreviewProviderRegistryImpl;
 import com.misterpemodder.shulkerboxtooltip.impl.util.NamedLogger;
 import dev.architectury.injectables.annotations.ExpectPlatform;
@@ -87,6 +88,7 @@ public final class PluginManager {
     }
 
     colorsLoaded = true;
+    ShulkerBoxTooltip.configTree.reload(new Configuration());
   }
 
   @Environment(EnvType.CLIENT)

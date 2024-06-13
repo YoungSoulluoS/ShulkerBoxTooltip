@@ -25,7 +25,7 @@
   "text.autoconfig.shulkerboxtooltip.option.preview.serverIntegration": "服务端通信",
   "text.autoconfig.shulkerboxtooltip.option.preview.serverIntegration.tooltip": "选择§2是§r以启用后, 客户端会向服务端提出请求, \n从而允许你在多人游戏中查看更多信息 §7( 例如预览末影箱 )",
   "text.autoconfig.shulkerboxtooltip.option.preview.theme": "外观",
-  "text.autoconfig.shulkerboxtooltip.option.preview.theme.tooltip": "The theme to use for preview windows.\nModded Light:\n ShulkerBoxTooltip's style with vanilla colors.\nModded Dark:\n ShulkerBoxTooltip's style with gray preview windows instead of white.\nVanilla:\n Mimics the style of vanilla bundle previews.\n",
+  "text.autoconfig.shulkerboxtooltip.option.preview.theme.tooltip": "The theme to use for preview windows.\nModded Light:\n ShulkerBoxTooltip's style with vanilla colors.\nModded Dark:\n ShulkerBoxTooltip's style with gray preview windows instead of white.\nVanilla:\n Mimics the style of vanilla bundle previews.",
   "text.autoconfig.shulkerboxtooltip.option.preview.position": "Window Position",
   "text.autoconfig.shulkerboxtooltip.option.preview.position.tooltip": "The position of the preview window.\nInside:\n Inside the item's tooltip.\nOutside:\n Outside the item's tooltip, moves depending on the screen borders.\nOutside (top):\n Always at the top of the item's tooltip.\nOutside (bottom):\n Always at the bottom of the item's tooltip.",
   "text.autoconfig.shulkerboxtooltip.option.preview.shortItemCounts": "Abbreviate large item counts",

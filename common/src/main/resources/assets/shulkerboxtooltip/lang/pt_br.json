@@ -25,7 +25,7 @@
   "text.autoconfig.shulkerboxtooltip.option.preview.serverIntegration": "Integração do servidor",
   "text.autoconfig.shulkerboxtooltip.option.preview.serverIntegration.tooltip": "Se ativado, o cliente tentará enviar pacotes aos servidores\npara permitir informações extras de visualizaçãon\ncomo visualizações de baús de ender.",
   "text.autoconfig.shulkerboxtooltip.option.preview.theme": "Tema",
-  "text.autoconfig.shulkerboxtooltip.option.preview.theme.tooltip": "O tema a ser usado para janelas de visualização.\nModded Light:\n ShulkerBoxTooltip com estilo de cores vanilla.\nModded Dark:\n ShulkerBoxTooltip com estilo de janelas de visualização cinza em vez de claro.\nVanilla:\n Imita o estilo das visualizações de pacotes vanilla.\n",
+  "text.autoconfig.shulkerboxtooltip.option.preview.theme.tooltip": "O tema a ser usado para janelas de visualização.\nModded Light:\n ShulkerBoxTooltip com estilo de cores vanilla.\nModded Dark:\n ShulkerBoxTooltip com estilo de janelas de visualização cinza em vez de claro.\nVanilla:\n Imita o estilo das visualizações de pacotes vanilla.",
   "text.autoconfig.shulkerboxtooltip.option.preview.position": "Posição da Janela",
   "text.autoconfig.shulkerboxtooltip.option.preview.position.tooltip": "A posição da janela de visualização.\nDentro:\n Dentro da dica de ferramenta do item.\nFora:\n Fora da dica de ferramenta do item, move-se dependendo das bordas da tela.\nFora (Superior):\n Sempre no topo da dica de ferramenta do item.\nFora(inferior):\n Sempre na parte inferior da dica de ferramenta do item.",
   "text.autoconfig.shulkerboxtooltip.option.preview.shortItemCounts": "Abreviar contagens de itens grandes",

@@ -34,9 +34,6 @@ configurations {
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.forgeVersion}"
 
-    // Cloth-Config
-    modApi("me.shedaniel.cloth:cloth-config-forge:${rootProject.clothConfigVersion}")
-
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowCommon(project(path: ':common', configuration: 'transformProductionForge')) { transitive = false }
 
@@ -152,9 +149,6 @@ curseforge {
         mainArtifact(remapJar) {
             displayName = "[Forge $project.mcVersionFull] v${project.version}"
         }
-        relations {
-            requiredDependency 'cloth-config'
-        }
     }
     options {
         forgeGradleIntegration = false
@@ -181,7 +175,4 @@ modrinth {
     gameVersions = hostGameVersions.split(',').toList()
     loaders = ['forge']
     debugMode = project.projectBaseVersion.contains('SNAPSHOT')
-    dependencies {
-        required.project '9s6osm5g' // cloth-config-api
-    }
 }

@@ -1,3 +1,7 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
 archivesBaseName = "${rootProject.projectArchiveBaseName}-common"
 
 architectury {
@@ -8,17 +12,22 @@ loom {
     accessWidenerPath = file('src/main/resources/shulkerboxtooltip.accesswidener')
 }
 
+configurations {
+    shadowCommon
+}
+
 dependencies {
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
     // Do NOT use other classes from fabric loader
-    modImplementation("net.fabricmc:fabric-loader:${rootProject.fabricLoaderVersion}")
-
-    // Cloth-Config
-    modApi("me.shedaniel.cloth:cloth-config:${rootProject.clothConfigVersion}")
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabricLoaderVersion}"
 
     // Nullable annotations.
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'org.jetbrains:annotations:23.0.0'
+
+    // Jankson
+    compileOnly "blue.endless:jankson:${rootProject.janksonVersion}"
+    shadowCommon "blue.endless:jankson:${rootProject.janksonVersion}"
 }
 
 javadoc {
@@ -30,6 +39,19 @@ javadoc {
 task javadocJar(type: Jar, dependsOn: javadoc) {
     archiveClassifier.set('javadoc')
     from javadoc.destinationDir
+}
+
+shadowJar {
+    relocate 'blue.endless.jankson', "${rootProject.group}.shulkerboxtooltip.shadowed.blue.endless.jankson"
+
+    configurations = [project.configurations.shadowCommon]
+    archiveClassifier.set('dev-shadow')
+}
+
+remapJar {
+    inputFile = shadowJar.archiveFile
+    dependsOn shadowJar
+    archiveClassifier.set(null)
 }
 
 publishing {

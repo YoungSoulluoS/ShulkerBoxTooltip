@@ -5,6 +5,7 @@ import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltipClient;
 import com.misterpemodder.shulkerboxtooltip.api.PreviewContext;
 import com.misterpemodder.shulkerboxtooltip.api.ShulkerBoxTooltipApi;
 import com.misterpemodder.shulkerboxtooltip.impl.config.ConfigurationHandler;
+import com.misterpemodder.shulkerboxtooltip.impl.config.gui.ConfigScreen;
 import com.misterpemodder.shulkerboxtooltip.impl.tooltip.PreviewClientTooltipComponent;
 import com.misterpemodder.shulkerboxtooltip.impl.tooltip.PreviewTooltipComponent;
 import com.mojang.datafixers.util.Either;
@@ -32,7 +33,8 @@ public final class ShulkerBoxTooltipClientImpl extends ShulkerBoxTooltipClient {
 
       // Register the config screen
       ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class,
-          () -> (client, parent) -> ConfigurationHandler.ClientOnly.makeConfigScreen(parent));
+          () -> (client, parent) -> new ConfigScreen<>(parent, ShulkerBoxTooltip.configTree,
+              ShulkerBoxTooltip.savedConfig, ConfigurationHandler::saveToFile));
 
       // ItemStack -> PreviewTooltipComponent
       NeoForge.EVENT_BUS.addListener(ShulkerBoxTooltipClientImpl::onGatherTooltipComponents);
