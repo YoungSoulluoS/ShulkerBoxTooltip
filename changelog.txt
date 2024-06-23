@@ -1,3 +1,12 @@
+5.0.0+1.21:
+- Updated to Minecraft 1.21
+- Fixed unlocalized option names in configuration menu
+- API BREAK: Make fields of BlockEntityPreviewProvider private
+- API BREAK: Remove PreviewContext.of()
+- API BREAK: Remove ShulkerBoxTooltipApi.isPreviewKeyPressed()
+- API BREAK: Remove ShulkerBoxTooltipApi.isFullPreviewKeyPressed()
+
+====================================================================================================
 4.1.0+1.20.6:
 - Updated to Minecraft 1.20.6 (#151)
 - Drop Cloth Config dependency
