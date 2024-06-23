@@ -106,12 +106,22 @@ public final class Configuration implements PreviewConfiguration {
 
 
   public enum Theme {
-    SHULKERBOXTOOLTIP, VANILLA
+    SHULKERBOXTOOLTIP, VANILLA;
+
+    @Override
+    public String toString() {
+      return "shulkerboxtooltip.config.theme." + this.name().toLowerCase();
+    }
   }
 
 
   public enum PreviewPosition {
-    INSIDE, OUTSIDE, OUTSIDE_TOP, OUTSIDE_BOTTOM
+    INSIDE, OUTSIDE, OUTSIDE_TOP, OUTSIDE_BOTTOM;
+
+    @Override
+    public String toString() {
+      return "shulkerboxtooltip.config.preview_position." + this.name().toLowerCase();
+    }
   }
 
 
@@ -147,12 +157,22 @@ public final class Configuration implements PreviewConfiguration {
 
 
   public enum ShulkerBoxTooltipType {
-    VANILLA, MOD, NONE
+    VANILLA, MOD, NONE;
+
+    @Override
+    public String toString() {
+      return "shulkerboxtooltip.config.tooltip_type." + this.name().toLowerCase();
+    }
   }
 
 
   public enum LootTableInfoType {
-    HIDE, SIMPLE, ADVANCED
+    HIDE, SIMPLE, ADVANCED;
+
+    @Override
+    public String toString() {
+      return "shulkerboxtooltip.config.loot_table_info_type." + this.name().toLowerCase();
+    }
   }
 
 
@@ -209,7 +229,12 @@ public final class Configuration implements PreviewConfiguration {
 
 
   public enum EnderChestSyncType {
-    NONE, ACTIVE, PASSIVE
+    NONE, ACTIVE, PASSIVE;
+
+    @Override
+    public String toString() {
+      return "shulkerboxtooltip.config.ender_chest_sync_type." + this.name().toLowerCase();
+    }
   }
 
   @Override
