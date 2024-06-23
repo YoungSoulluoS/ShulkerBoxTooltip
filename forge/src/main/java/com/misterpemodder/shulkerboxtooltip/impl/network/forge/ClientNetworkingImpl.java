@@ -2,68 +2,59 @@ package com.misterpemodder.shulkerboxtooltip.impl.network.forge;
 
 import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
 import com.misterpemodder.shulkerboxtooltip.impl.network.ClientNetworking;
+import com.misterpemodder.shulkerboxtooltip.impl.network.channel.C2SChannel;
 import com.misterpemodder.shulkerboxtooltip.impl.network.message.C2SMessages;
+import com.misterpemodder.shulkerboxtooltip.impl.network.message.MessageType;
 import com.misterpemodder.shulkerboxtooltip.impl.network.message.S2CMessages;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.network.NetworkDirection;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
-public final class ClientNetworkingImpl extends ClientNetworking {
-  @SubscribeEvent
-  public static void onJoinServer(ClientPlayerNetworkEvent.LoggingIn event) {
-    if (ShulkerBoxTooltip.config.preview.serverIntegration)
-      S2CMessages.registerAll();
-    ClientNetworking.onJoinServer(MinecraftClient.getInstance());
+public final class ClientNetworkingImpl {
+  public static final Map<ResourceLocation, ForgeC2SChannel<?>> C2S_CHANNELS = new HashMap<>();
+
+  private ClientNetworkingImpl() {
   }
 
   @SubscribeEvent
+  @OnlyIn(Dist.CLIENT)
+  public static void onJoinServer(ClientPlayerNetworkEvent.LoggingIn event) {
+    if (ShulkerBoxTooltip.config.preview.serverIntegration)
+      S2CMessages.registerAll();
+    ClientNetworking.onJoinServer(Minecraft.getInstance());
+  }
+
+  @SubscribeEvent
+  @OnlyIn(Dist.CLIENT)
   public static void onLeaveServer(ClientPlayerNetworkEvent.LoggingOut event) {
     if (ShulkerBoxTooltip.config.preview.serverIntegration)
       C2SMessages.onDisconnectFromServer();
   }
 
   /**
-   * Implements {@link ClientNetworking#createC2SPacket(Identifier, PacketByteBuf)}.
-   */
-  public static Packet<?> createC2SPacket(Identifier channelId, PacketByteBuf buf) {
-    return NetworkDirection.PLAY_TO_SERVER.buildPacket(buf, channelId).getThis();
-  }
-
-  /**
    * Implements {@link ClientNetworking#init()}.
    */
+  @OnlyIn(Dist.CLIENT)
   public static void init() {
-    C2SMessages.init();
-    S2CMessages.init();
+    S2CMessages.registerPayloadTypes();
+    C2SMessages.registerPayloadTypes();
     MinecraftForge.EVENT_BUS.register(ClientNetworkingImpl.class);
   }
 
   /**
-   * Implements {@link ClientNetworking#registerS2CReceiver(Identifier, PacketReceiver)}.
+   * Implements {@link ClientNetworking#createC2SChannel(ResourceLocation, MessageType)}.
    */
-  public static void registerS2CReceiver(Identifier channelId, PacketReceiver receiver) {
-    ChannelListener.get(channelId).s2cPacketReceiver = receiver;
-  }
-
-  /**
-   * Implements {@link ClientNetworking#unregisterS2CReceiver(Identifier)}.
-   */
-  public static void unregisterS2CReceiver(Identifier channelId) {
-    ChannelListener.get(channelId).s2cPacketReceiver = null;
-  }
-
-  /**
-   * Implements {@link ClientNetworking#addRegistrationChangeListener(Identifier, RegistrationChangeListener)}.
-   */
-  public static void addRegistrationChangeListener(Identifier channelId, RegistrationChangeListener listener) {
-    ChannelListener.get(channelId).s2cRegChangeListener = listener;
+  public static <T> C2SChannel<T> createC2SChannel(ResourceLocation id, MessageType<T> type) {
+    var channel = new ForgeC2SChannel<>(id, type);
+    C2S_CHANNELS.put(id, channel);
+    return channel;
   }
 }

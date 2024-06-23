@@ -30,7 +30,6 @@ public final class ShulkerBoxTooltipClientImpl extends ShulkerBoxTooltipClient {
     event.enqueueWork(() -> {
       ShulkerBoxTooltipClient.init();
 
-
       // Register the config screen
       ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class,
           () -> (client, parent) -> new ConfigScreen<>(parent, ShulkerBoxTooltip.configTree,

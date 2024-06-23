@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public final class PluginManagerImpl {
+  private PluginManagerImpl() {
+  }
+
   /**
    * Implementation of {@link PluginManager#getPluginContainers()}.
    */

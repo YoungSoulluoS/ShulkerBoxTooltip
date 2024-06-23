@@ -1,5 +1,5 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
     id 'com.modrinth.minotaur' version '2.+'
 }
@@ -15,8 +15,7 @@ loom {
     accessWidenerPath = project(':common').loom.accessWidenerPath
 
     forge {
-        convertAccessWideners = true
-        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+        accessTransformers = files('src/main/resources/META-INF/accesstransformer.cfg')
         mixinConfig 'shulkerboxtooltip-common.mixins.json'
         mixinConfig 'shulkerboxtooltip-forge.mixins.json'
     }
@@ -40,6 +39,10 @@ dependencies {
     // Nullable annotations.
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'org.jetbrains:annotations:23.0.0'
+
+    // Jankson
+    localRuntime("blue.endless:jankson:${rootProject.janksonVersion}")
+    forgeRuntimeLibrary(shadowCommon("blue.endless:jankson:${rootProject.janksonVersion}"))
 }
 
 processResources {
@@ -54,14 +57,26 @@ shadowJar {
     exclude 'fabric.mod.json'
     exclude 'architectury.common.json'
 
+    relocate 'blue.endless.jankson', "${rootProject.group}.shulkerboxtooltip.shadowed.blue.endless.jankson"
+
     configurations = [project.configurations.shadowCommon]
     archiveClassifier.set('dev-shadow')
 }
 
 remapJar {
-    input.set shadowJar.archiveFile
+    inputFile = shadowJar.archiveFile
     dependsOn shadowJar
     archiveClassifier.set(null)
+}
+
+// magical bit of config to get Forge somewhat working
+tasks.withType(net.fabricmc.loom.task.AbstractRemapJarTask).configureEach {
+    targetNamespace = "named"
+}
+configurations.all {
+    resolutionStrategy {
+        force 'net.sf.jopt-simple:jopt-simple:5.0.4'
+    }
 }
 
 jar {
