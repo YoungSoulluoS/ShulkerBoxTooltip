@@ -1,3 +1,16 @@
+4.1.0+1.20.6:
+- Updated to Minecraft 1.20.6 (#151)
+- Drop Cloth Config dependency
+- Added support for NeoForge
+- Removed support for Forge, hopefully temporarily
+- Fixed "Empty" text always added to pickable containers
+- Added German localization by ReneMuetti.
+- Added preview support for decorated pots, chiseled bookshelves, and lecterns.
+- Fixed previews swapping sizes when viewing containers with different slot counts.
+- Added highlight for the currently selected slot in the preview window.
+- Show dropper/dispenser previews as a 3x3 grid instead of 9x3.
+
+====================================================================================================
 4.1.0-alpha.4+1.20.6:
 - Added support for NeoForge
 - Fixed "Empty" text always added to pickable containers
