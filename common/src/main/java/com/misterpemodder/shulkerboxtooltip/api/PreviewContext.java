@@ -17,37 +17,6 @@ import javax.annotation.Nullable;
  */
 public interface PreviewContext {
   /**
-   * Creates a preview context with an item stack.
-   *
-   * @param stack The stack.
-   * @return The created preview context
-   * @since 2.0.0
-   * @deprecated Use {@link #builder(ItemStack)} instead.
-   */
-  @Nonnull
-  @Contract("_ -> new")
-  @Deprecated(since = "4.1.0", forRemoval = true)
-  static PreviewContext of(ItemStack stack) {
-    return builder(stack).build();
-  }
-
-  /**
-   * Creates a preview context with an item stack and an owner.
-   *
-   * @param stack The stack.
-   * @param owner The owner, may be null.
-   * @return The created preview context
-   * @since 2.0.0
-   * @deprecated Use {@link #builder(ItemStack)} instead.
-   */
-  @Nonnull
-  @Contract("_, _ -> new")
-  @Deprecated(since = "4.1.0", forRemoval = true)
-  static PreviewContext of(ItemStack stack, @Nullable Player owner) {
-    return builder(stack).withOwner(owner).build();
-  }
-
-  /**
    * Creates a new {@link PreviewContext.Builder} instance.
    * <p>
    * This is the recommended way to create a {@link PreviewContext} instance as of 4.1.0.

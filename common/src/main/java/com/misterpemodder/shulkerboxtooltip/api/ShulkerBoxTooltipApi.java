@@ -9,7 +9,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -94,34 +93,6 @@ public interface ShulkerBoxTooltipApi {
   @Nonnull
   static PreviewType getCurrentPreviewType(boolean hasFullPreviewMode) {
     return ShulkerBoxTooltipClient.getCurrentPreviewType(hasFullPreviewMode);
-  }
-
-  /**
-   * Checks whether the client player is pressing the preview key ({@code shift} by default).
-   *
-   * @return true if the preview key is pressed.
-   * @since 2.1.0
-   * @deprecated Use {@link #getCurrentPreviewType(boolean)} instead.
-   */
-  @Environment(EnvType.CLIENT)
-  @Deprecated(forRemoval = true, since = "4.0.3")
-  @ApiStatus.ScheduledForRemoval(inVersion = "5.0.0")
-  static boolean isPreviewKeyPressed() {
-    return ShulkerBoxTooltipClient.isPreviewKeyPressed();
-  }
-
-  /**
-   * Checks whether the client player is pressing the full preview key ({@code alt} by default).
-   *
-   * @return true if the full preview key is pressed.
-   * @since 2.1.0
-   * @deprecated Use {@link #getCurrentPreviewType(boolean)} instead.
-   */
-  @Environment(EnvType.CLIENT)
-  @Deprecated(forRemoval = true, since = "4.0.3")
-  @ApiStatus.ScheduledForRemoval(inVersion = "5.0.0")
-  static boolean isFullPreviewKeyPressed() {
-    return ShulkerBoxTooltipClient.isFullPreviewKeyPressed();
   }
 
   /**

@@ -35,64 +35,46 @@ import java.util.List;
  * @since 1.3.0
  */
 public class BlockEntityPreviewProvider implements PreviewProvider {
-  /**
-   * The maximum preview inventory size of the item (maybe lower than the actual inventory size).
-   *
-   * @deprecated Use {@link #getInventoryMaxSize(PreviewContext)} instead.
-   */
-  @Deprecated(since = "4.0.8", forRemoval = true)
-  protected final int maxInvSize;
-  /**
-   * If true, previews will not be shown when the {@code LootTable} tag inside {@code BlockEntityData} is present.
-   *
-   * @deprecated Use {@link #canUseLootTables()} instead.
-   */
-  @Deprecated(since = "4.0.8", forRemoval = true)
-  protected final boolean canUseLootTables;
-  /**
-   * The maximum number of item stacks to be displayed in a row.
-   *
-   * @deprecated Use {@link #getMaxRowSize(PreviewContext)} instead.
-   */
-  @Deprecated(since = "4.0.8", forRemoval = true)
-  protected final int maxRowSize;
+  private final int defaultMaxInvSize;
+  private final boolean defaultCanUseLootTables;
+  private final int defaultMaxRowSize;
 
   /**
    * Creates a BlockEntityPreviewProvider instance.
    *
-   * @param maxInvSize       The maximum preview inventory size of the item
-   *                         (maybe lower than the actual inventory size).
-   *                         If the inventory size isn't constant,
-   *                         override {@link #getInventoryMaxSize(PreviewContext)}
-   *                         and use {@code maxInvSize} as a default value.
-   * @param canUseLootTables If true, previews will not be shown when the {@code LootTable}
-   *                         tag inside {@code BlockEntityData} is present.
+   * @param defaultMaxInvSize       The maximum preview inventory size of the item
+   *                                (maybe lower than the actual inventory size).
+   *                                If the inventory size isn't constant,
+   *                                override {@link #getInventoryMaxSize(PreviewContext)}
+   *                                and use {@code maxInvSize} as a default value.
+   * @param defaultCanUseLootTables If true, previews will not be shown when the {@code LootTable}
+   *                                tag inside {@code BlockEntityData} is present.
    * @since 1.3.0
    */
-  public BlockEntityPreviewProvider(int maxInvSize, boolean canUseLootTables) {
-    this.maxInvSize = maxInvSize;
-    this.canUseLootTables = canUseLootTables;
-    this.maxRowSize = 9;
+  public BlockEntityPreviewProvider(int defaultMaxInvSize, boolean defaultCanUseLootTables) {
+    this.defaultMaxInvSize = defaultMaxInvSize;
+    this.defaultCanUseLootTables = defaultCanUseLootTables;
+    this.defaultMaxRowSize = 9;
   }
 
   /**
    * Creates a BlockEntityPreviewProvider instance.
    *
-   * @param maxInvSize       The maximum preview inventory size of the item
-   *                         (maybe lower than the actual inventory size).
-   *                         If the inventory size isn't constant,
-   *                         override {@link #getInventoryMaxSize(PreviewContext)}
-   *                         and use {@code maxInvSize} as a default value.
-   * @param canUseLootTables If true, previews will not be shown when the {@code LootTable}
-   *                         tag inside {@code BlockEntityData} is present.
-   * @param maxRowSize       The maximum number of item stacks to be displayed in a row.
-   *                         If less or equal to zero, defaults to 9.
+   * @param defaultMaxInvSize       The maximum preview inventory size of the item
+   *                                (maybe lower than the actual inventory size).
+   *                                If the inventory size isn't constant,
+   *                                override {@link #getInventoryMaxSize(PreviewContext)}
+   *                                and use {@code maxInvSize} as a default value.
+   * @param defaultCanUseLootTables If true, previews will not be shown when the {@code LootTable}
+   *                                tag inside {@code BlockEntityData} is present.
+   * @param defaultMaxRowSize       The maximum number of item stacks to be displayed in a row.
+   *                                If less or equal to zero, defaults to 9.
    * @since 2.0.0
    */
-  public BlockEntityPreviewProvider(int maxInvSize, boolean canUseLootTables, int maxRowSize) {
-    this.maxInvSize = maxInvSize;
-    this.canUseLootTables = canUseLootTables;
-    this.maxRowSize = maxRowSize <= 0 ? 9 : maxRowSize;
+  public BlockEntityPreviewProvider(int defaultMaxInvSize, boolean defaultCanUseLootTables, int defaultMaxRowSize) {
+    this.defaultMaxInvSize = defaultMaxInvSize;
+    this.defaultCanUseLootTables = defaultCanUseLootTables;
+    this.defaultMaxRowSize = defaultMaxRowSize <= 0 ? 9 : defaultMaxRowSize;
   }
 
   @Override
@@ -122,7 +104,7 @@ public class BlockEntityPreviewProvider implements PreviewProvider {
 
   @Override
   public int getInventoryMaxSize(PreviewContext context) {
-    return this.maxInvSize;
+    return this.defaultMaxInvSize;
   }
 
   @Override
@@ -182,7 +164,7 @@ public class BlockEntityPreviewProvider implements PreviewProvider {
 
   @Override
   public int getMaxRowSize(PreviewContext context) {
-    return this.maxRowSize;
+    return this.defaultMaxRowSize;
   }
 
   /**
@@ -191,7 +173,7 @@ public class BlockEntityPreviewProvider implements PreviewProvider {
    * @since 4.0.8
    */
   public boolean canUseLootTables() {
-    return this.canUseLootTables;
+    return this.defaultCanUseLootTables;
   }
 
   private static int getItemCount(@Nullable List<ItemStack> items) {
