@@ -39,9 +39,9 @@ public abstract class ValueConfigEntry<C, T, V> extends ConfigEntry {
   private boolean hasChanged;
 
   public static final Component RESET_BUTTON_LABEL = Component.translatable(
-      "shulkerboxtooltip.config.resetToDefault.small");
+      "shulkerboxtooltip.config.reset_to_default.small");
   public static final Component RESET_BUTTON_TOOLTIP = Component.translatable(
-      "shulkerboxtooltip.config.resetToDefault.full");
+      "shulkerboxtooltip.config.reset_to_default.full");
   public static final Component UNDO_BUTTON_LABEL = Component.translatable("shulkerboxtooltip.config.undo.small");
   public static final Component UNDO_BUTTON_TOOLTIP = Component.translatable("shulkerboxtooltip.config.undo.full");
 

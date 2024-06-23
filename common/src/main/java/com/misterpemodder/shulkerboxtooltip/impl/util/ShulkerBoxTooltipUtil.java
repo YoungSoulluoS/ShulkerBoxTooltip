@@ -4,6 +4,9 @@ import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
 import net.minecraft.resources.ResourceLocation;
 
 public final class ShulkerBoxTooltipUtil {
+  private ShulkerBoxTooltipUtil() {
+  }
+
   public static ResourceLocation id(String id) {
     return new ResourceLocation(ShulkerBoxTooltip.MOD_ID, id);
   }
@@ -69,5 +72,20 @@ public final class ShulkerBoxTooltipUtil {
     int g = (int) (255F * components[1]);
     int b = (int) (255F * components[2]);
     return (r << 16) | (g << 8) | b;
+  }
+
+  public static String snakeCase(String str) {
+    var sb = new StringBuilder();
+    for (int i = 0; i < str.length(); i++) {
+      char c = str.charAt(i);
+      if (Character.isUpperCase(c)) {
+        if (i > 0)
+          sb.append('_');
+        sb.append(Character.toLowerCase(c));
+      } else {
+        sb.append(c);
+      }
+    }
+    return sb.toString();
   }
 }

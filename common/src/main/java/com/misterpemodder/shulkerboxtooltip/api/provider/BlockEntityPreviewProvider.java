@@ -135,9 +135,9 @@ public class BlockEntityPreviewProvider implements PreviewProvider {
       return switch (ShulkerBoxTooltip.config.tooltip.lootTableInfoType) {
         case HIDE -> Collections.emptyList();
         case SIMPLE -> Collections.singletonList(
-            Component.translatable("shulkerboxtooltip.hint.lootTable").setStyle(style));
+            Component.translatable("shulkerboxtooltip.hint.loot_table").setStyle(style));
         default -> Arrays.asList(
-            Component.translatable("shulkerboxtooltip.hint.lootTable.advanced").append(Component.literal(": ")),
+            Component.translatable("shulkerboxtooltip.hint.loot_table.advanced").append(Component.literal(": ")),
             Component.literal(" " + lootComponent.lootTable().location()).setStyle(style));
       };
     }

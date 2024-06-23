@@ -10,6 +10,7 @@ import com.misterpemodder.shulkerboxtooltip.impl.config.annotation.Synchronize;
 import com.misterpemodder.shulkerboxtooltip.impl.config.annotation.Validator;
 import com.misterpemodder.shulkerboxtooltip.impl.tree.ValueConfigNode.ValueReader;
 import com.misterpemodder.shulkerboxtooltip.impl.tree.ValueConfigNode.ValueWriter;
+import com.misterpemodder.shulkerboxtooltip.impl.util.ShulkerBoxTooltipUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.resources.language.I18n;
@@ -26,7 +27,7 @@ import static com.misterpemodder.shulkerboxtooltip.impl.util.ShulkerBoxTooltipUt
 
 public final class RootConfigNode<C> implements ConfigNode<C> {
 
-  public static final Component TITLE = Component.translatable("text.autoconfig.shulkerboxtooltip.title");
+  public static final Component TITLE = Component.translatable("shulkerboxtooltip.config.title");
 
   private ImmutableList<CategoryConfigNode<C>> categories;
 
@@ -166,7 +167,7 @@ public final class RootConfigNode<C> implements ConfigNode<C> {
       var categoryClass = categoryField.getType();
       var categoryName = categoryField.getName();
       var categoryBuilder = CategoryConfigNode.<C>builder().name(categoryName).title(
-          Component.translatable("text.autoconfig.shulkerboxtooltip.category." + categoryName));
+          Component.translatable("shulkerboxtooltip.config.category." + ShulkerBoxTooltipUtil.snakeCase(categoryName)));
 
       for (var valueField : categoryClass.getDeclaredFields()) {
         this.addValueNode(defaultCategory, categoryField, valueField, categoryBuilder);
@@ -196,10 +197,11 @@ public final class RootConfigNode<C> implements ConfigNode<C> {
     private <T> void addSingleValueField(Class<? extends T> type, T defaultValue, Field categoryField, Field valueField,
         CategoryConfigNode.Builder<C> categoryBuilder) {
       var valueName = valueField.getName();
-      var titleKey = "text.autoconfig.shulkerboxtooltip.option." + categoryField.getName() + "." + valueName;
+      var titleKey = "shulkerboxtooltip.config.option." + ShulkerBoxTooltipUtil.snakeCase(categoryField.getName()) + "."
+          + ShulkerBoxTooltipUtil.snakeCase(valueName);
       var title = Component.translatable(titleKey);
       var tooltip = Component.translatable(titleKey + ".tooltip");
-      var prefixKey = titleKey + ".@PrefixText";
+      var prefixKey = titleKey + ".prefix";
 
       categoryBuilder.<T, T>value(valueBuilder -> {
         valueBuilder //

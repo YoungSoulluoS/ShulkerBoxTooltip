@@ -27,6 +27,6 @@ public enum ItemStackMergingStrategy {
 
   @Override
   public String toString() {
-    return "shulkerboxtooltip.compactPreviewNbtBehavior." + this.name().toLowerCase();
+    return "shulkerboxtooltip.config.item_stack_merging_strategy." + this.name().toLowerCase();
   }
 }
