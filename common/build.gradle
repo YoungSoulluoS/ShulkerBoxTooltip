@@ -65,8 +65,25 @@ publishing {
                 builtBy remapJar
             }
 
-            artifact(sourcesJar) {
+            artifact(remapSourcesJar) {
                 builtBy remapSourcesJar
+            }
+
+            pom rootProject.ext.makePom(project)
+        }
+
+        mavenCommonMojmap(MavenPublication) {
+            groupId = project.group
+            artifactId = project.archivesBaseName + "-mojmap"
+            version = project.version
+
+            artifact(shadowJar) {
+                builtBy shadowJar
+                setClassifier null
+            }
+
+            artifact(sourcesJar) {
+                builtBy sourcesJar
             }
 
             artifact(javadocJar) {
@@ -84,6 +101,7 @@ signing {
     if (signingKey && signingPassword) {
         useInMemoryPgpKeys(signingKey, signingPassword)
         sign publishing.publications.mavenCommon
+        sign publishing.publications.mavenCommonMojmap
     } else {
         println("${project.name}: skipping jar signing")
     }
