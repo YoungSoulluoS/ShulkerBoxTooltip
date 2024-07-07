@@ -1,3 +1,7 @@
+5.0.3+1.20.6:
+- Added Mexican Spanish localization by TheLegendofSaram. (#163)
+
+====================================================================================================
 5.0.2+1.20.6:
 - Updated Russian localization by Alexander317. (#160)
 
