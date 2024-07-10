@@ -5,9 +5,9 @@ import com.misterpemodder.shulkerboxtooltip.api.color.ColorKey;
 import com.misterpemodder.shulkerboxtooltip.api.renderer.PreviewRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
@@ -156,10 +156,10 @@ public interface PreviewProvider {
    * Returned lines are added only if tooltip type is set to {@code MODDED} in the config.
    *
    * @param context The preview context.
-   * @return A list of Text components. If empty, no text will be added to the tooltip.
+   * @return A list of components. If empty, no text will be added to the tooltip.
    * @since 2.0.0
    */
-  default List<Text> addTooltip(PreviewContext context) {
+  default List<Component> addTooltip(PreviewContext context) {
     return Collections.emptyList();
   }
 
@@ -183,7 +183,7 @@ public interface PreviewProvider {
    */
   @Nullable
   @Environment(EnvType.CLIENT)
-  default Identifier getTextureOverride(PreviewContext context) {
+  default ResourceLocation getTextureOverride(PreviewContext context) {
     return null;
   }
 

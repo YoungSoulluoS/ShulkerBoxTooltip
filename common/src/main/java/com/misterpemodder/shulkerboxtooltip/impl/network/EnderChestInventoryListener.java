@@ -3,25 +3,27 @@ package com.misterpemodder.shulkerboxtooltip.impl.network;
 import com.misterpemodder.shulkerboxtooltip.api.ShulkerBoxTooltipApi;
 import com.misterpemodder.shulkerboxtooltip.impl.network.message.S2CEnderChestUpdate;
 import com.misterpemodder.shulkerboxtooltip.impl.network.message.S2CMessages;
-import net.minecraft.inventory.EnderChestInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.InventoryChangedListener;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerListener;
+import net.minecraft.world.inventory.PlayerEnderChestContainer;
+import org.jetbrains.annotations.NotNull;
 
-public final class EnderChestInventoryListener implements InventoryChangedListener {
+public final class EnderChestInventoryListener implements ContainerListener {
 
-  private final ServerPlayerEntity player;
+  private final ServerPlayer player;
 
-  private EnderChestInventoryListener(ServerPlayerEntity player) {
+  private EnderChestInventoryListener(ServerPlayer player) {
     this.player = player;
   }
 
-  public void onInventoryChanged(Inventory inv) {
+  @Override
+  public void containerChanged(@NotNull Container inv) {
     if (!ShulkerBoxTooltipApi.hasModAvailable(this.player)) {
       detachFrom(this.player);
       return;
     }
-    S2CMessages.ENDER_CHEST_UPDATE.sendTo(this.player, S2CEnderChestUpdate.create((EnderChestInventory) inv));
+    S2CMessages.ENDER_CHEST_UPDATE.sendTo(this.player, S2CEnderChestUpdate.create((PlayerEnderChestContainer) inv));
   }
 
   /**
@@ -30,13 +32,13 @@ public final class EnderChestInventoryListener implements InventoryChangedListen
    *
    * @param player The player
    */
-  public static void attachTo(ServerPlayerEntity player) {
+  public static void attachTo(ServerPlayer player) {
     var inventory = player == null ? null : player.getEnderChestInventory();
     var listeners = inventory == null ? null : inventory.listeners;
 
     // Search for existing listener
     if (listeners != null) {
-      for (InventoryChangedListener listener : listeners)
+      for (ContainerListener listener : listeners)
         if (listener instanceof EnderChestInventoryListener)
           return;
     }
@@ -49,7 +51,7 @@ public final class EnderChestInventoryListener implements InventoryChangedListen
    *
    * @param player The player
    */
-  public static void detachFrom(ServerPlayerEntity player) {
+  public static void detachFrom(ServerPlayer player) {
     var inventory = player == null ? null : player.getEnderChestInventory();
     var listeners = inventory == null ? null : inventory.listeners;
 
@@ -57,7 +59,7 @@ public final class EnderChestInventoryListener implements InventoryChangedListen
       return;
 
     // Search for existing listener and remove it if found
-    for (InventoryChangedListener listener : listeners) {
+    for (ContainerListener listener : listeners) {
       if (listener instanceof EnderChestInventoryListener) {
         inventory.removeListener(listener);
         return;

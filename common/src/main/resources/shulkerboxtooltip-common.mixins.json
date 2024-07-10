@@ -4,9 +4,9 @@
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
-    "client.HandledScreenMixin",
+    "client.AbstractContainerScreenMixin",
     "client.ItemStackMixin",
-    "client.KeyboardMixin",
+    "client.KeyboardHandlerMixin",
     "client.ScreenMixin",
     "client.ShulkerBoxBlockMixin"
   ],

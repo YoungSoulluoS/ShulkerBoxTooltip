@@ -9,10 +9,10 @@ import com.misterpemodder.shulkerboxtooltip.impl.network.message.MessageType;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerPlayerConnection;
 
 /**
  * Server-to-client channel wrapper.
@@ -26,7 +26,7 @@ public final class S2CChannel<MSG> extends Channel<MSG> {
    * @param id          The channel id, must be unique.
    * @param messageType The channel description.
    */
-  public S2CChannel(Identifier id, MessageType<MSG> messageType) {
+  public S2CChannel(ResourceLocation id, MessageType<MSG> messageType) {
     super(id, messageType);
   }
 
@@ -57,17 +57,17 @@ public final class S2CChannel<MSG> extends Channel<MSG> {
    * @param player  The target player.
    * @param message The message to send.
    */
-  public void sendTo(ServerPlayerEntity player, MSG message) {
-    ServerPlayNetworkHandler handler = player.networkHandler;
+  public void sendTo(ServerPlayer player, MSG message) {
+    ServerPlayerConnection handler = player.connection;
 
     if (handler == null) {
       ShulkerBoxTooltip.LOGGER.error(
           "Cannot send message to the " + this.id + " channel while player " + player.getName() + " is not in-game");
       return;
     }
-    PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
 
     this.messageType.encode(message, buf);
-    handler.sendPacket(ServerNetworking.createS2CPacket(this.id, buf));
+    handler.send(ServerNetworking.createS2CPacket(this.id, buf));
   }
 }

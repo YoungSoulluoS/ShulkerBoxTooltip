@@ -1,7 +1,7 @@
 package com.misterpemodder.shulkerboxtooltip.impl.network.context;
 
 import com.misterpemodder.shulkerboxtooltip.impl.network.channel.Channel;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 public sealed interface MessageContext<MSG> permits C2SMessageContext, S2CMessageContext {
   /**
@@ -11,7 +11,7 @@ public sealed interface MessageContext<MSG> permits C2SMessageContext, S2CMessag
    */
   void execute(Runnable task);
 
-  PlayerEntity getPlayer();
+  Player getPlayer();
 
   Channel<MSG> getChannel();
 

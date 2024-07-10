@@ -7,15 +7,15 @@ import com.misterpemodder.shulkerboxtooltip.api.provider.BlockEntityPreviewProvi
 import com.misterpemodder.shulkerboxtooltip.impl.config.Configuration;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.DyeColor;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +33,7 @@ public class ShulkerBoxPreviewProvider extends BlockEntityPreviewProvider {
   @Override
   @Environment(EnvType.CLIENT)
   public ColorKey getWindowColorKey(PreviewContext context) {
-    DyeColor dye = ((ShulkerBoxBlock) Block.getBlockFromItem(context.stack().getItem())).getColor();
+    DyeColor dye = ((ShulkerBoxBlock) Block.byItem(context.stack().getItem())).getColor();
 
     if (dye == null)
       return ColorKey.SHULKER_BOX;
@@ -58,18 +58,18 @@ public class ShulkerBoxPreviewProvider extends BlockEntityPreviewProvider {
   }
 
   @Override
-  public List<Text> addTooltip(PreviewContext context) {
+  public List<Component> addTooltip(PreviewContext context) {
     ItemStack stack = context.stack();
-    NbtCompound compound = stack.getNbt();
+    CompoundTag compound = stack.getTag();
 
     if (this.canUseLootTables && compound != null && compound.contains("BlockEntityTag", 10)) {
-      NbtCompound blockEntityTag = compound.getCompound("BlockEntityTag");
+      CompoundTag blockEntityTag = compound.getCompound("BlockEntityTag");
 
       if (blockEntityTag != null && blockEntityTag.contains("LootTable", 8)
           && ShulkerBoxTooltip.config.tooltip.lootTableInfoType == Configuration.LootTableInfoType.HIDE) {
-        Style style = Style.EMPTY.withColor(Formatting.GRAY);
+        Style style = Style.EMPTY.withColor(ChatFormatting.GRAY);
 
-        return Collections.singletonList(new LiteralText("???????").setStyle(style));
+        return Collections.singletonList(new TextComponent("???????").setStyle(style));
       }
     }
     return super.addTooltip(context);

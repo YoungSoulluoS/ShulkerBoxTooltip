@@ -20,7 +20,7 @@ subprojects {
 
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.mcVersion}"
-        mappings "net.fabricmc:yarn:${rootProject.mcVersion}+${rootProject.yarnMappings}:v2"
+        mappings loom.officialMojangMappings()
     }
 
     publishing {

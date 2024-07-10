@@ -1,9 +1,9 @@
 package com.misterpemodder.shulkerboxtooltip.impl.util;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Objects;
 
@@ -13,13 +13,13 @@ import java.util.Objects;
 public class ItemKey {
   private final Item item;
   private final int id;
-  private final NbtCompound data;
+  private final CompoundTag data;
   private final boolean ignoreData;
 
   public ItemKey(ItemStack stack, boolean ignoreData) {
     this.item = stack.getItem();
-    this.id = Registry.ITEM.getRawId(this.item);
-    this.data = stack.getNbt();
+    this.id = Registry.ITEM.getId(this.item);
+    this.data = stack.getTag();
     this.ignoreData = ignoreData;
   }
 

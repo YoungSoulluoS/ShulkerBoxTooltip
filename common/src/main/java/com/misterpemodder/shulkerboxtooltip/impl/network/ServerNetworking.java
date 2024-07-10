@@ -6,11 +6,11 @@ import com.misterpemodder.shulkerboxtooltip.impl.config.Configuration;
 import com.misterpemodder.shulkerboxtooltip.impl.network.message.S2CEnderChestUpdate;
 import com.misterpemodder.shulkerboxtooltip.impl.network.message.S2CMessages;
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.minecraft.network.Packet;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -22,13 +22,13 @@ public class ServerNetworking {
   /**
    * A map of current compatible clients along with their protocol version.
    */
-  private static final Map<ServerPlayerEntity, ProtocolVersion> CLIENTS = new WeakHashMap<>();
+  private static final Map<ServerPlayer, ProtocolVersion> CLIENTS = new WeakHashMap<>();
 
   /**
    * @param player The player.
    * @return true if the player has the mod installed and server integration turned on.
    */
-  public static boolean hasModAvailable(ServerPlayerEntity player) {
+  public static boolean hasModAvailable(ServerPlayer player) {
     return CLIENTS.containsKey(player);
   }
 
@@ -36,7 +36,7 @@ public class ServerNetworking {
    * @param client  The player.
    * @param version The client's protocol version.
    */
-  public static void addClient(ServerPlayerEntity client, ProtocolVersion version) {
+  public static void addClient(ServerPlayer client, ProtocolVersion version) {
     CLIENTS.put(client, version);
 
     // Initialize the providers if not already initialized
@@ -49,7 +49,7 @@ public class ServerNetworking {
       EnderChestInventoryListener.attachTo(client);
   }
 
-  public static void removeClient(ServerPlayerEntity client) {
+  public static void removeClient(ServerPlayer client) {
     CLIENTS.remove(client);
     EnderChestInventoryListener.detachFrom(client);
   }
@@ -61,8 +61,8 @@ public class ServerNetworking {
    * @param buf       The packet's data.
    * @return A custom vanilla packet.
    */
-  public static Packet<?> createS2CPacket(Identifier channelId, PacketByteBuf buf) {
-    return new CustomPayloadS2CPacket(channelId, buf);
+  public static Packet<?> createS2CPacket(ResourceLocation channelId, FriendlyByteBuf buf) {
+    return new ClientboundCustomPayloadPacket(channelId, buf);
   }
 
   /**
@@ -80,7 +80,7 @@ public class ServerNetworking {
    * @param receiver  The handling function.
    */
   @ExpectPlatform
-  public static void registerC2SReceiver(Identifier channelId, ServerPlayerEntity player, PacketReceiver receiver) {
+  public static void registerC2SReceiver(ResourceLocation channelId, ServerPlayer player, PacketReceiver receiver) {
     throw new AssertionError("Missing implementation of ServerNetworking.registerC2SReceiver()");
   }
 
@@ -92,7 +92,7 @@ public class ServerNetworking {
    * @param channelId The channel identifier.
    */
   @ExpectPlatform
-  public static void unregisterC2SReceiver(Identifier channelId, ServerPlayerEntity player) {
+  public static void unregisterC2SReceiver(ResourceLocation channelId, ServerPlayer player) {
     throw new AssertionError("Missing implementation of ServerNetworking.unregisterC2SReceiver()");
   }
 
@@ -103,7 +103,7 @@ public class ServerNetworking {
    * @param listener  The listener to call on registration changes.
    */
   @ExpectPlatform
-  public static void addRegistrationChangeListener(Identifier channelId, RegistrationChangeListener listener) {
+  public static void addRegistrationChangeListener(ResourceLocation channelId, RegistrationChangeListener listener) {
     throw new AssertionError("Missing implementation of ServerNetworking.addRegistrationChangeListener()");
   }
 
@@ -118,7 +118,7 @@ public class ServerNetworking {
      * @param sender The client that sent this packet.
      * @param buf    The packet data.
      */
-    void handle(ServerPlayerEntity sender, PacketByteBuf buf);
+    void handle(ServerPlayer sender, FriendlyByteBuf buf);
   }
 
 
@@ -133,6 +133,6 @@ public class ServerNetworking {
      * @param sender The player that triggered this event.
      * @param type   Whether the channel was registered on unregistered.
      */
-    void onRegistrationChange(ServerPlayerEntity sender, RegistrationChangeType type);
+    void onRegistrationChange(ServerPlayer sender, RegistrationChangeType type);
   }
 }

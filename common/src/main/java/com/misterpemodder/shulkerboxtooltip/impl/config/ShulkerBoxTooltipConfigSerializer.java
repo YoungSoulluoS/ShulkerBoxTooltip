@@ -17,7 +17,7 @@ import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.api.Marshall
 import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.api.SyntaxError;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.io.BufferedWriter;
@@ -183,7 +183,7 @@ public class ShulkerBoxTooltipConfigSerializer implements ConfigSerializer<Confi
           (obj, marshaller) -> Key.fromTranslationKey(obj.get(String.class, "code")));
       builder.registerSerializer(Key.class, (key, marshaller) -> {
         JsonObject object = new JsonObject();
-        object.put("code", new JsonPrimitive(key.get().getTranslationKey()));
+        object.put("code", new JsonPrimitive(key.get().getName()));
         return object;
       });
 
@@ -193,7 +193,7 @@ public class ShulkerBoxTooltipConfigSerializer implements ConfigSerializer<Confi
 
     private static ColorRegistry deserializeColorRegistry(JsonObject obj, Marshaller marshaller) {
       for (var categoryEntry : obj.entrySet()) {
-        var categoryId = Identifier.tryParse(categoryEntry.getKey());
+        var categoryId = ResourceLocation.tryParse(categoryEntry.getKey());
 
         if (categoryId != null && categoryEntry.getValue() instanceof JsonObject categoryObject)
           deserializeColorCategory(categoryId, categoryObject);
@@ -217,7 +217,7 @@ public class ShulkerBoxTooltipConfigSerializer implements ConfigSerializer<Confi
       return object;
     }
 
-    private static void deserializeColorCategory(Identifier id, JsonObject object) {
+    private static void deserializeColorCategory(ResourceLocation id, JsonObject object) {
       var category = ColorRegistryImpl.INSTANCE.category(id);
 
       for (var entry : object.entrySet()) {

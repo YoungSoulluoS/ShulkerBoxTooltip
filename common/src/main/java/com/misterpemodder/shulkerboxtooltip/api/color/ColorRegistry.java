@@ -2,7 +2,7 @@ package com.misterpemodder.shulkerboxtooltip.api.color;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
@@ -29,7 +29,7 @@ public interface ColorRegistry {
    * @since 3.2.0
    */
   @Nonnull
-  Category category(Identifier categoryId);
+  Category category(ResourceLocation categoryId);
 
   /**
    * Access to the default category.
@@ -50,7 +50,7 @@ public interface ColorRegistry {
    * @since 3.2.0
    */
   @Nonnull
-  Map<Identifier, Category> categories();
+  Map<ResourceLocation, Category> categories();
 
   /**
    * A color category.

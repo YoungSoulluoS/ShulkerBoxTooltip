@@ -1,7 +1,7 @@
 package com.misterpemodder.shulkerboxtooltip.impl.network;
 
 import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.annotation.Nullable;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 
 /**
  * ShulkerBoxTooltip's network protocol versioning.
@@ -22,7 +22,7 @@ public record ProtocolVersion(int major, int minor) {
    * @return The remote version, or null if an error occurred.
    */
   @Nullable
-  public static ProtocolVersion readFromPacketBuf(PacketByteBuf buf) {
+  public static ProtocolVersion readFromPacketBuf(FriendlyByteBuf buf) {
     try {
       return new ProtocolVersion(buf.readInt(), buf.readInt());
     } catch (RuntimeException e) {
@@ -35,7 +35,7 @@ public record ProtocolVersion(int major, int minor) {
    *
    * @param buf The byte buffer.
    */
-  public void writeToPacketBuf(PacketByteBuf buf) {
+  public void writeToPacketBuf(FriendlyByteBuf buf) {
     buf.writeInt(this.major);
     buf.writeInt(this.minor);
   }

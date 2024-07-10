@@ -3,13 +3,13 @@ package com.misterpemodder.shulkerboxtooltip.mixin.client;
 import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltipClient;
 import com.misterpemodder.shulkerboxtooltip.api.PreviewContext;
 import com.misterpemodder.shulkerboxtooltip.api.ShulkerBoxTooltipApi;
-import com.misterpemodder.shulkerboxtooltip.impl.renderer.DrawContext;
-import com.misterpemodder.shulkerboxtooltip.impl.renderer.DrawContextAccess;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
+import com.misterpemodder.shulkerboxtooltip.impl.renderer.GuiGraphics;
+import com.misterpemodder.shulkerboxtooltip.impl.renderer.GuiGraphicsAccess;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -22,17 +22,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
 
-@Mixin(HandledScreen.class)
-public class HandledScreenMixin {
+@Mixin(AbstractContainerScreen.class)
+public class AbstractContainerScreenMixin {
 
 
   @Shadow
   @Nullable
-  protected Slot focusedSlot;
+  protected Slot hoveredSlot;
 
   @Final
   @Shadow
-  protected ScreenHandler handler;
+  protected AbstractContainerMenu menu;
 
   @Unique
   @Nullable
@@ -42,18 +42,18 @@ public class HandledScreenMixin {
   @Unique
   private int mouseLockY = 0;
 
-  @Inject(at = @At("HEAD"), method = "isPointOverSlot(Lnet/minecraft/screen/slot/Slot;DD)Z", cancellable = true)
+  @Inject(at = @At("HEAD"), method = "isHovering(Lnet/minecraft/world/inventory/Slot;DD)Z", cancellable = true)
   private void forceFocusSlot(Slot slot, double pointX, double pointY, CallbackInfoReturnable<Boolean> cir) {
     if (this.mouseLockSlot != null) {
       // Handling the case where the hovered item stack get swapped for air while the tooltip is locked
       // When this happens, the lockTooltipPosition() hook will not be called (there is no tooltip for air),
       // so we need to perform cleanup logic here.
       //
-      // We also need to check if the slot is still part of the handler,
+      // We also need to check if the slot is still part of the menu,
       // as it may have been removed (this is the case when switching tabs in the creative inventory)
 
-      if (this.mouseLockSlot.hasStack() && this.handler.slots.contains(this.mouseLockSlot))
-        cir.setReturnValue(slot == this.mouseLockSlot && this.handler.getCursorStack().isEmpty());
+      if (this.mouseLockSlot.hasItem() && this.menu.slots.contains(this.mouseLockSlot))
+        cir.setReturnValue(slot == this.mouseLockSlot && this.menu.getCarried().isEmpty());
       else
         // reset the lock if the stack is no longer present
         this.mouseLockSlot = null;
@@ -63,32 +63,33 @@ public class HandledScreenMixin {
   /**
    * Makes the current mouse position available via extensions to the DrawContext.
    */
-  @Inject(at = @At("HEAD"), method = "render(Lnet/minecraft/client/util/math/MatrixStack;IIF)V")
-  private void captureMousePosition(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-    DrawContext context = ((DrawContextAccess) this).getDrawContext();
-    context.setMouseY(mouseY);
-    context.setMouseX(mouseX);
+  @Inject(at = @At("HEAD"), method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;IIF)V")
+  private void captureMousePosition(PoseStack poseStack, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    GuiGraphics graphics = ((GuiGraphicsAccess) this).getGuiGraphics();
+    graphics.setMouseY(mouseY);
+    graphics.setMouseX(mouseX);
   }
 
-  @Inject(at = @At("HEAD"), method = "drawMouseoverTooltip(Lnet/minecraft/client/util/math/MatrixStack;II)V")
+  @Inject(at = @At("HEAD"), method = "renderTooltip(Lcom/mojang/blaze3d/vertex/PoseStack;II)V")
   private void enableLockKeyHints(CallbackInfo ci) {
     ShulkerBoxTooltipClient.setLockKeyHintsEnabled(true);
   }
 
-  @Inject(at = @At("RETURN"), method = "drawMouseoverTooltip(Lnet/minecraft/client/util/math/MatrixStack;II)V")
+  @Inject(at = @At("RETURN"), method = "renderTooltip(Lcom/mojang/blaze3d/vertex/PoseStack;II)V")
   private void disableLockKeyHints(CallbackInfo ci) {
     ShulkerBoxTooltipClient.setLockKeyHintsEnabled(false);
   }
 
-  @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/item/ItemStack;II)V"), method = "drawMouseoverTooltip(Lnet/minecraft/client/util/math/MatrixStack;II)V")
-  private void lockTooltipPosition(HandledScreen<?> instance, MatrixStack matrixStack, ItemStack itemStack, int x,
+  @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;"
+      + "renderTooltip(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/item/ItemStack;II)V"), method = "renderTooltip(Lcom/mojang/blaze3d/vertex/PoseStack;II)V")
+  private void lockTooltipPosition(AbstractContainerScreen<?> instance, PoseStack poseStack, ItemStack itemStack, int x,
       int y) {
     Slot mouseLockSlot = this.mouseLockSlot;
 
     if (ShulkerBoxTooltipClient.isLockPreviewKeyPressed()) {
       if (mouseLockSlot == null) {
         // when locking is requested and no slot is currently locked.
-        mouseLockSlot = this.focusedSlot;
+        mouseLockSlot = this.hoveredSlot;
         this.mouseLockX = x;
         this.mouseLockY = y;
       }
@@ -97,7 +98,7 @@ public class HandledScreenMixin {
     }
 
     if (mouseLockSlot != null) {
-      ItemStack stack = mouseLockSlot.getStack();
+      ItemStack stack = mouseLockSlot.getItem();
 
       PreviewContext context = PreviewContext.of(stack,
           ShulkerBoxTooltipClient.client == null ? null : ShulkerBoxTooltipClient.client.player);
@@ -113,6 +114,6 @@ public class HandledScreenMixin {
       }
     }
     this.mouseLockSlot = mouseLockSlot;
-    instance.renderTooltip(matrixStack, itemStack, x, y);
+    instance.renderTooltip(poseStack, itemStack, x, y);
   }
 }

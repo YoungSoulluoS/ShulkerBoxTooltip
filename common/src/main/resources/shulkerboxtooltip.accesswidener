@@ -1,4 +1,4 @@
 accessWidener v1 named
-accessible class net/minecraft/client/gui/tooltip/BundleTooltipComponent$Sprite
-accessible field net/minecraft/inventory/SimpleInventory listeners Ljava/util/List;
-accessible method net/minecraft/client/gui/screen/Screen renderTooltip (Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/item/ItemStack;II)V
+accessible class net/minecraft/client/gui/screens/inventory/tooltip/ClientBundleTooltip$Texture
+accessible field net/minecraft/world/SimpleContainer listeners Ljava/util/List;
+accessible method net/minecraft/client/gui/screens/Screen renderTooltip (Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/item/ItemStack;II)V

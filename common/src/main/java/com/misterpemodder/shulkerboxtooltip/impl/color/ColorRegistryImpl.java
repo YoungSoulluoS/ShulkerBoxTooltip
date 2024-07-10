@@ -7,7 +7,7 @@ import com.misterpemodder.shulkerboxtooltip.api.color.ColorRegistry;
 import com.misterpemodder.shulkerboxtooltip.impl.util.ShulkerBoxTooltipUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,10 +18,10 @@ import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public final class ColorRegistryImpl implements ColorRegistry {
-  private final Map<Identifier, ColorRegistryImpl.Category> categories;
-  private final Map<Identifier, ColorRegistryImpl.Category> emptyCategories;
+  private final Map<ResourceLocation, ColorRegistryImpl.Category> categories;
+  private final Map<ResourceLocation, ColorRegistryImpl.Category> emptyCategories;
 
-  private final Map<Identifier, ColorRegistry.Category> categoriesView;
+  private final Map<ResourceLocation, ColorRegistry.Category> categoriesView;
   private boolean locked;
   private int registeredKeysCount;
 
@@ -38,7 +38,7 @@ public final class ColorRegistryImpl implements ColorRegistry {
 
   @Override
   @Nonnull
-  public ColorRegistryImpl.Category category(Identifier categoryId) {
+  public ColorRegistryImpl.Category category(ResourceLocation categoryId) {
     var category = this.categories.get(categoryId);
     if (category == null)
       return this.emptyCategories.computeIfAbsent(categoryId, Category::new);
@@ -53,7 +53,7 @@ public final class ColorRegistryImpl implements ColorRegistry {
 
   @Override
   @Nonnull
-  public Map<Identifier, ColorRegistry.Category> categories() {
+  public Map<ResourceLocation, ColorRegistry.Category> categories() {
     return this.categoriesView;
   }
 
@@ -70,7 +70,7 @@ public final class ColorRegistryImpl implements ColorRegistry {
   }
 
   public final class Category implements ColorRegistry.Category {
-    private final Identifier id;
+    private final ResourceLocation id;
     /**
      * The map of color keys in this category, initialized on first color register.
      */
@@ -83,7 +83,7 @@ public final class ColorRegistryImpl implements ColorRegistry {
      */
     private Map<String, Integer> lateKeyValues = null;
 
-    public Category(Identifier id) {
+    public Category(ResourceLocation id) {
       this.id = id;
     }
 

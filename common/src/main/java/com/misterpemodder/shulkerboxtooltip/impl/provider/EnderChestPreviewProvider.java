@@ -12,12 +12,12 @@ import com.misterpemodder.shulkerboxtooltip.impl.network.message.C2SEnderChestUp
 import com.misterpemodder.shulkerboxtooltip.impl.network.message.C2SMessages;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EnderChestInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.PlayerEnderChestContainer;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,30 +26,30 @@ import java.util.List;
 public class EnderChestPreviewProvider implements PreviewProvider {
   @Override
   public List<ItemStack> getInventory(PreviewContext context) {
-    PlayerEntity owner = context.owner();
+    Player owner = context.owner();
 
     if (owner == null)
       return Collections.emptyList();
 
-    EnderChestInventory inventory = owner.getEnderChestInventory();
-    int size = inventory.size();
-    List<ItemStack> items = DefaultedList.ofSize(size, ItemStack.EMPTY);
+    PlayerEnderChestContainer inventory = owner.getEnderChestInventory();
+    int size = inventory.getContainerSize();
+    List<ItemStack> items = NonNullList.withSize(size, ItemStack.EMPTY);
 
     for (int i = 0; i < size; ++i)
-      items.set(i, inventory.getStack(i).copy());
+      items.set(i, inventory.getItem(i).copy());
     return items;
   }
 
   @Override
   public int getInventoryMaxSize(PreviewContext context) {
-    PlayerEntity owner = context.owner();
+    Player owner = context.owner();
 
-    return owner == null ? 0 : owner.getEnderChestInventory().size();
+    return owner == null ? 0 : owner.getEnderChestInventory().getContainerSize();
   }
 
   @Override
   public boolean shouldDisplay(PreviewContext context) {
-    PlayerEntity owner = context.owner();
+    Player owner = context.owner();
 
     if (owner == null)
       return false;
@@ -68,7 +68,7 @@ public class EnderChestPreviewProvider implements PreviewProvider {
   public void onInventoryAccessStart(PreviewContext context) {
     if (ShulkerBoxTooltip.config.server.enderChestSyncType == EnderChestSyncType.PASSIVE
         // this method may be called when not in a world, so we need to check if we can send packets
-        && MinecraftClient.getInstance().getNetworkHandler() != null)
+        && Minecraft.getInstance().getConnection() != null)
       C2SMessages.ENDER_CHEST_UPDATE_REQUEST.sendToServer(new C2SEnderChestUpdateRequest());
   }
 
@@ -79,7 +79,7 @@ public class EnderChestPreviewProvider implements PreviewProvider {
   }
 
   @Override
-  public List<Text> addTooltip(PreviewContext context) {
+  public List<Component> addTooltip(PreviewContext context) {
     if (ShulkerBoxTooltipApi.getCurrentPreviewType(this.isFullPreviewAvailable(context)) == PreviewType.FULL)
       return Collections.emptyList();
     return BlockEntityPreviewProvider.getItemCountTooltip(new ArrayList<>(), this.getInventory(context));

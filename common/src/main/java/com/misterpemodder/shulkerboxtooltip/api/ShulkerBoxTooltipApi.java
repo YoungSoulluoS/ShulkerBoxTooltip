@@ -7,8 +7,8 @@ import com.misterpemodder.shulkerboxtooltip.api.provider.PreviewProviderRegistry
 import com.misterpemodder.shulkerboxtooltip.impl.network.ServerNetworking;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
  *   public class MyModShulkerBoxTooltipPlugin implements ShulkerBoxTooltipApi {
  *     @Override
  *     public void registerProviders(PreviewProviderRegistry registry) {
- *       registry.register(new Identifier("mymod", "barrel_example"),
+ *       registry.register(new ResourceLocation("mymod", "barrel_example"),
  *           new BlockEntityPreviewProvider(27, true), Items.BARREL);
  *     }
  *   }
@@ -131,7 +131,7 @@ public interface ShulkerBoxTooltipApi {
    * @return true if the player has the mod installed and server integration turned on.
    * @since 2.0.0
    */
-  static boolean hasModAvailable(ServerPlayerEntity player) {
+  static boolean hasModAvailable(ServerPlayer player) {
     return ServerNetworking.hasModAvailable(player);
   }
 

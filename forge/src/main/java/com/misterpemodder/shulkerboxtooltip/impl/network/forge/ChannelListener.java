@@ -4,8 +4,8 @@ import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
 import com.misterpemodder.shulkerboxtooltip.impl.network.ClientNetworking;
 import com.misterpemodder.shulkerboxtooltip.impl.network.RegistrationChangeType;
 import com.misterpemodder.shulkerboxtooltip.impl.network.ServerNetworking;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkEvent;
@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 final class ChannelListener {
   private static final Supplier<String> DUMMY_VERSION = () -> "1";
   private static final Predicate<String> MATCH_ALL = v -> true;
-  private static final Map<Identifier, ChannelListener> INSTANCES = new HashMap<>();
+  private static final Map<ResourceLocation, ChannelListener> INSTANCES = new HashMap<>();
 
   public ServerNetworking.PacketReceiver c2sPacketReceiver;
   public ServerNetworking.RegistrationChangeListener c2sRegChangeListener;
@@ -36,12 +36,12 @@ final class ChannelListener {
       eventChannel.addListener(this::onClientEvent);
   }
 
-  public static ChannelListener get(Identifier channelId) {
+  public static ChannelListener get(ResourceLocation channelId) {
     return INSTANCES.computeIfAbsent(channelId,
         id -> new ChannelListener(NetworkRegistry.newEventChannel(id, DUMMY_VERSION, MATCH_ALL, MATCH_ALL)));
   }
 
-  private static ServerPlayerEntity sender(NetworkEvent event) {
+  private static ServerPlayer sender(NetworkEvent event) {
     return event.getSource().get().getSender();
   }
 

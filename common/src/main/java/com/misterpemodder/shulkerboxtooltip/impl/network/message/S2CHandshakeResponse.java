@@ -6,7 +6,7 @@ import com.misterpemodder.shulkerboxtooltip.impl.config.ConfigurationHandler;
 import com.misterpemodder.shulkerboxtooltip.impl.network.ClientNetworking;
 import com.misterpemodder.shulkerboxtooltip.impl.network.ProtocolVersion;
 import com.misterpemodder.shulkerboxtooltip.impl.network.context.MessageContext;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -20,13 +20,13 @@ import java.util.Objects;
 public record S2CHandshakeResponse(@Nullable ProtocolVersion serverVersion, Configuration config) {
   public static class Type implements MessageType<S2CHandshakeResponse> {
     @Override
-    public void encode(S2CHandshakeResponse message, PacketByteBuf buf) {
+    public void encode(S2CHandshakeResponse message, FriendlyByteBuf buf) {
       Objects.requireNonNull(message.serverVersion).writeToPacketBuf(buf);
       ConfigurationHandler.writeToPacketBuf(message.config, buf);
     }
 
     @Override
-    public S2CHandshakeResponse decode(PacketByteBuf buf) {
+    public S2CHandshakeResponse decode(FriendlyByteBuf buf) {
       ProtocolVersion serverVersion = ProtocolVersion.readFromPacketBuf(buf);
       Configuration config = ConfigurationHandler.copyOf(ShulkerBoxTooltip.config);
 

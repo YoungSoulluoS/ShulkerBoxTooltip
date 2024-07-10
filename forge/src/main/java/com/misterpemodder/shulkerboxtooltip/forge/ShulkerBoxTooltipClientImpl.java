@@ -3,8 +3,8 @@ package com.misterpemodder.shulkerboxtooltip.forge;
 import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
 import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltipClient;
 import com.misterpemodder.shulkerboxtooltip.impl.config.ConfigurationHandler;
+import com.misterpemodder.shulkerboxtooltip.impl.tooltip.PreviewClientTooltipComponent;
 import com.misterpemodder.shulkerboxtooltip.impl.tooltip.PreviewTooltipComponent;
-import com.misterpemodder.shulkerboxtooltip.impl.tooltip.PreviewTooltipData;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.ConfigGuiHandler;
@@ -23,7 +23,8 @@ public final class ShulkerBoxTooltipClientImpl extends ShulkerBoxTooltipClient {
       ShulkerBoxTooltipClient.init();
 
       // PreviewTooltipData -> PreviewTooltipComponent conversion
-      MinecraftForgeClient.registerTooltipComponentFactory(PreviewTooltipData.class, PreviewTooltipComponent::new);
+      MinecraftForgeClient.registerTooltipComponentFactory(PreviewTooltipComponent.class,
+          PreviewClientTooltipComponent::new);
 
       // Register the config screen
       ModLoadingContext.get().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class,

@@ -1,11 +1,11 @@
 package com.misterpemodder.shulkerboxtooltip.impl.util;
 
 import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public final class ShulkerBoxTooltipUtil {
-  public static Identifier id(String id) {
-    return new Identifier(ShulkerBoxTooltip.MOD_ID, id);
+  public static ResourceLocation id(String id) {
+    return new ResourceLocation(ShulkerBoxTooltip.MOD_ID, id);
   }
 
   public static String abbreviateInteger(int count) {

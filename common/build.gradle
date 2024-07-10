@@ -55,8 +55,8 @@ publishing {
             artifactId = project.archivesBaseName + "-mojmap"
             version = project.version
 
-            artifact(shadowJar) {
-                builtBy shadowJar
+            artifact(jar) {
+                builtBy jar
                 setClassifier null
             }
 

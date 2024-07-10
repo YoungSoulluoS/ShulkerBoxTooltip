@@ -7,13 +7,13 @@ import com.misterpemodder.shulkerboxtooltip.api.provider.PreviewProvider;
 import com.misterpemodder.shulkerboxtooltip.impl.config.Configuration;
 import com.misterpemodder.shulkerboxtooltip.impl.renderer.ModPreviewRenderer;
 import com.misterpemodder.shulkerboxtooltip.impl.renderer.VanillaPreviewRenderer;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.TextureManager;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
@@ -101,18 +101,18 @@ public interface PreviewRenderer {
    * @param x              X position of the preview's upper-right corner.
    * @param y              Y position of the preview's upper-right corner.
    * @param z              The depth of the preview.
-   * @param matrices       The transformation matrices.
-   * @param textRenderer   The text renderer.
+   * @param poseStack      The transformation matrices.
+   * @param font           The text renderer.
    * @param itemRenderer   The item renderer.
    * @param textureManager The texture manager.
    * @since 3.0.0
    * @deprecated Will be removed in version 4.0.0.
-   * Use {@link #draw(int, int, int, MatrixStack, TextRenderer, ItemRenderer, TextureManager, Screen, int, int)} instead.
+   * Use {@link #draw(int, int, int, PoseStack, Font, ItemRenderer, TextureManager, Screen, int, int)} instead.
    */
   @Deprecated(forRemoval = true, since = "3.4.0")
-  default void draw(int x, int y, int z, MatrixStack matrices, TextRenderer textRenderer, ItemRenderer itemRenderer,
+  default void draw(int x, int y, int z, PoseStack poseStack, Font font, ItemRenderer itemRenderer,
       TextureManager textureManager) {
-    this.draw(x, y, z, matrices, textRenderer, itemRenderer, textureManager, null, 0, 0);
+    this.draw(x, y, z, poseStack, font, itemRenderer, textureManager, null, 0, 0);
   }
 
   /**
@@ -125,9 +125,9 @@ public interface PreviewRenderer {
    * @param x              X position of the preview's upper-right corner.
    * @param y              Y position of the preview's upper-right corner.
    * @param z              The depth of the preview.
-   * @param matrices       The transformation matrices.
+   * @param poseStack      The transformation matrices.
    * @param itemRenderer   The item renderer.
-   * @param textRenderer   The text renderer.
+   * @param font           The text renderer.
    * @param textureManager The texture manager.
    * @param screen         The current screen this tooltip is a part of.
    * @param mouseX         The mouse X position.
@@ -135,9 +135,9 @@ public interface PreviewRenderer {
    * @since 3.4.0 (1.18.x branch only)
    */
   @ApiStatus.Experimental
-  default void draw(int x, int y, int z, MatrixStack matrices, TextRenderer textRenderer, ItemRenderer itemRenderer,
+  default void draw(int x, int y, int z, PoseStack poseStack, Font font, ItemRenderer itemRenderer,
       TextureManager textureManager, @Nullable Screen screen, int mouseX, int mouseY) {
-    this.draw(x, y, z, matrices, textRenderer, itemRenderer, textureManager);
+    this.draw(x, y, z, poseStack, font, itemRenderer, textureManager);
   }
 
 }

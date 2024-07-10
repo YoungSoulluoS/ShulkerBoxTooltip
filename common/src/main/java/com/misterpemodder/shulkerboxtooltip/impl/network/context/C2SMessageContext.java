@@ -1,16 +1,16 @@
 package com.misterpemodder.shulkerboxtooltip.impl.network.context;
 
 import com.misterpemodder.shulkerboxtooltip.impl.network.channel.Channel;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
-public record C2SMessageContext<MSG>(ServerPlayerEntity player, Channel<MSG> channel) implements MessageContext<MSG> {
+public record C2SMessageContext<MSG>(ServerPlayer player, Channel<MSG> channel) implements MessageContext<MSG> {
   @Override
   public void execute(Runnable task) {
     this.player.server.execute(task);
   }
 
   @Override
-  public ServerPlayerEntity getPlayer() {
+  public ServerPlayer getPlayer() {
     return this.player;
   }
 

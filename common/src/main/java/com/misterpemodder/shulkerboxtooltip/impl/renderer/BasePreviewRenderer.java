@@ -8,12 +8,12 @@ import com.misterpemodder.shulkerboxtooltip.api.provider.PreviewProvider;
 import com.misterpemodder.shulkerboxtooltip.api.renderer.PreviewRenderer;
 import com.misterpemodder.shulkerboxtooltip.impl.util.MergedItemStack;
 import com.misterpemodder.shulkerboxtooltip.impl.util.ShulkerBoxTooltipUtil;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public abstract class BasePreviewRenderer implements PreviewRenderer {
   protected PreviewConfiguration config;
   protected int compactMaxRowSize;
   protected int maxRowSize;
-  protected Identifier textureOverride;
+  protected ResourceLocation textureOverride;
   protected PreviewProvider provider;
   protected List<MergedItemStack> items;
   protected PreviewContext previewContext;
@@ -113,8 +113,8 @@ public abstract class BasePreviewRenderer implements PreviewRenderer {
     }
   }
 
-  private void drawItem(ItemStack stack, int x, int y, MatrixStack matrices, TextRenderer textRenderer,
-      ItemRenderer itemRenderer, int slot, boolean shortItemCount) {
+  private void drawItem(ItemStack stack, int x, int y, PoseStack poseStack, Font font, ItemRenderer itemRenderer,
+      int slot, boolean shortItemCount) {
     String countLabel = "";
     int maxRowSize = this.getMaxRowSize();
 
@@ -129,49 +129,48 @@ public abstract class BasePreviewRenderer implements PreviewRenderer {
     x = this.slotXOffset + x + this.slotWidth * (slot % maxRowSize);
     y = this.slotYOffset + y + this.slotHeight * (slot / maxRowSize);
 
-    itemRenderer.renderInGuiWithOverrides(stack, x, y);
+    itemRenderer.renderAndDecorateItem(stack, x, y);
 
-    matrices.push();
-    matrices.translate(0, 0, -1);
-    itemRenderer.renderGuiItemOverlay(textRenderer, stack, x, y, countLabel);
-    matrices.pop();
+    poseStack.pushPose();
+    poseStack.translate(0, 0, -1);
+    itemRenderer.renderGuiItemDecorations(font, stack, x, y, countLabel);
+    poseStack.popPose();
   }
 
-  protected void drawItems(int x, int y, int z, MatrixStack matrices, TextRenderer textRenderer,
-      ItemRenderer itemRenderer) {
-    float prevOffset = itemRenderer.zOffset;
+  protected void drawItems(int x, int y, int z, PoseStack poseStack, Font font, ItemRenderer itemRenderer) {
+    float prevOffset = itemRenderer.blitOffset;
 
-    itemRenderer.zOffset = z;
+    itemRenderer.blitOffset = z;
     try {
       if (this.previewType == PreviewType.COMPACT) {
         boolean shortItemCounts = this.config.shortItemCounts();
 
         for (int slot = 0, size = this.items.size(); slot < size; ++slot) {
-          this.drawItem(this.items.get(slot).get(), x, y, matrices, textRenderer, itemRenderer, slot, shortItemCounts);
+          this.drawItem(this.items.get(slot).get(), x, y, poseStack, font, itemRenderer, slot, shortItemCounts);
         }
       } else {
         for (MergedItemStack compactor : this.items) {
           for (int slot = 0, size = compactor.size(); slot < size; ++slot) {
-            this.drawItem(compactor.getSubStack(slot), x, y, matrices, textRenderer, itemRenderer, slot, false);
+            this.drawItem(compactor.getSubStack(slot), x, y, poseStack, font, itemRenderer, slot, false);
           }
         }
       }
     } finally {
-      itemRenderer.zOffset = prevOffset;
+      itemRenderer.blitOffset = prevOffset;
     }
   }
 
   /**
    * Draw the tooltip that may be show when hovering a preview within a locked tooltip.
    */
-  protected void drawInnerTooltip(int x, int y, int z, MatrixStack matrices, Screen screen, int mouseX, int mouseY) {
+  protected void drawInnerTooltip(int x, int y, int z, PoseStack poseStack, Screen screen, int mouseX, int mouseY) {
     ItemStack stack = this.getStackAt(mouseX - x, mouseY - y);
 
     if (!stack.isEmpty()) {
-      matrices.push();
-      matrices.translate(0.0, 0.0, z);
-      screen.renderTooltip(matrices, stack, mouseX, mouseY);
-      matrices.pop();
+      poseStack.pushPose();
+      poseStack.translate(0.0, 0.0, z);
+      screen.renderTooltip(poseStack, stack, mouseX, mouseY);
+      poseStack.popPose();
     }
   }
 }

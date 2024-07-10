@@ -8,7 +8,7 @@ import com.misterpemodder.shulkerboxtooltip.impl.network.context.C2SMessageConte
 import com.misterpemodder.shulkerboxtooltip.impl.network.context.MessageContext;
 import com.misterpemodder.shulkerboxtooltip.impl.network.context.S2CMessageContext;
 import com.misterpemodder.shulkerboxtooltip.impl.network.message.MessageType;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Base network channel wrapper.
@@ -16,10 +16,10 @@ import net.minecraft.util.Identifier;
  * @param <MSG> The message data type.
  */
 public sealed class Channel<MSG> permits C2SChannel, S2CChannel {
-  protected final Identifier id;
+  protected final ResourceLocation id;
   protected final MessageType<MSG> messageType;
 
-  protected Channel(Identifier id, MessageType<MSG> messageType) {
+  protected Channel(ResourceLocation id, MessageType<MSG> messageType) {
     this.id = id;
     this.messageType = messageType;
 
@@ -32,7 +32,7 @@ public sealed class Channel<MSG> permits C2SChannel, S2CChannel {
     }
   }
 
-  public Identifier getId() {
+  public ResourceLocation getId() {
     return this.id;
   }
 

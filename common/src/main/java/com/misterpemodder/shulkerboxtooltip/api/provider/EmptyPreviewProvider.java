@@ -1,7 +1,7 @@
 package com.misterpemodder.shulkerboxtooltip.api.provider;
 
 import com.misterpemodder.shulkerboxtooltip.api.PreviewContext;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Collections;
 import java.util.List;

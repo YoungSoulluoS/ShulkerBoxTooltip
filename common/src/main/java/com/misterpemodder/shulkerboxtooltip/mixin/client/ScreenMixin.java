@@ -1,15 +1,15 @@
 package com.misterpemodder.shulkerboxtooltip.mixin.client;
 
-import com.misterpemodder.shulkerboxtooltip.impl.renderer.DrawContext;
-import com.misterpemodder.shulkerboxtooltip.impl.renderer.DrawContextAccess;
-import com.misterpemodder.shulkerboxtooltip.impl.renderer.DrawContextExtensions;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Matrix4f;
+import com.misterpemodder.shulkerboxtooltip.impl.renderer.GuiGraphics;
+import com.misterpemodder.shulkerboxtooltip.impl.renderer.GuiGraphicsAccess;
+import com.misterpemodder.shulkerboxtooltip.impl.renderer.GuiGraphicsExtensions;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,32 +18,32 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(Screen.class)
 @SuppressWarnings("SpellCheckingInspection")
-public class ScreenMixin implements DrawContextAccess {
+public class ScreenMixin implements GuiGraphicsAccess {
   @Unique
-  private final DrawContext drawContext = new DrawContext((Screen) (Object) this);
+  private final GuiGraphics guiGraphics = new GuiGraphics((Screen) (Object) this);
 
-  @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;fillGradient"
-      + "(Lnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/BufferBuilder;IIIIIII)V", ordinal = 2), method =
-      "Lnet/minecraft/client/gui/screen/Screen;renderTooltipFromComponents"
-          + "(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;II)V", index = 2)
+  @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;"
+      + "fillGradient(Lcom/mojang/math/Matrix4f;Lcom/mojang/blaze3d/vertex/BufferBuilder;IIIIIII)V", ordinal = 2), method = "renderTooltipInternal(Lcom/mojang/blaze3d/vertex/PoseStack;Ljava/util/List;II)V", index = 2)
   private int updateTooltipLeftAndBottomPos(Matrix4f matrix, BufferBuilder builder, int x1, int y1, int x2, int y2,
       int zOffset, int color1, int color2) {
-    DrawContextExtensions posAccess = this.drawContext;
+    GuiGraphicsExtensions posAccess = this.guiGraphics;
     posAccess.setTooltipTopYPosition(y1);
     posAccess.setTooltipBottomYPosition(y2);
     return x1;
   }
 
-  @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/tooltip/TooltipComponent;drawItems(Lnet/minecraft/client/font/TextRenderer;IILnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/item/ItemRenderer;I)V"), method = "Lnet/minecraft/client/gui/screen/Screen;renderTooltipFromComponents(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;II)V")
-  private void drawPosAwareComponent(TooltipComponent component, TextRenderer textRenderer, int x, int y,
-      MatrixStack matrices, ItemRenderer itemRenderer, int z) {
-    this.drawContext.update(matrices, itemRenderer);
-    this.drawContext.setZ(z);
-    this.drawContext.drawItems(component, textRenderer, x, y, z);
+  @Redirect(at = @At(value = "INVOKE", target =
+      "Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipComponent;"
+          + "renderImage(Lnet/minecraft/client/gui/Font;IILcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/entity/ItemRenderer;I)V"), method = "renderTooltipInternal(Lcom/mojang/blaze3d/vertex/PoseStack;Ljava/util/List;II)V")
+  private void drawPosAwareComponent(ClientTooltipComponent component, Font font, int x, int y, PoseStack poseStack,
+      ItemRenderer itemRenderer, int z) {
+    this.guiGraphics.update(poseStack, itemRenderer);
+    this.guiGraphics.setZ(z);
+    this.guiGraphics.renderTooltip(component, font, x, y, z);
   }
 
   @Override
-  public DrawContext getDrawContext() {
-    return this.drawContext;
+  public GuiGraphics getGuiGraphics() {
+    return this.guiGraphics;
   }
 }
