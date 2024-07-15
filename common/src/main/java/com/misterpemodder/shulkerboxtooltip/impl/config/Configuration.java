@@ -1,45 +1,27 @@
 package com.misterpemodder.shulkerboxtooltip.impl.config;
 
 import blue.endless.jankson.Comment;
-import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
-import com.misterpemodder.shulkerboxtooltip.api.color.ColorRegistry;
 import com.misterpemodder.shulkerboxtooltip.api.config.ItemStackMergingStrategy;
 import com.misterpemodder.shulkerboxtooltip.api.config.PreviewConfiguration;
-import com.misterpemodder.shulkerboxtooltip.impl.color.ColorRegistryImpl;
 import com.misterpemodder.shulkerboxtooltip.impl.config.annotation.ConfigCategory;
 import com.misterpemodder.shulkerboxtooltip.impl.config.annotation.RequiresRestart;
 import com.misterpemodder.shulkerboxtooltip.impl.config.annotation.Synchronize;
 import com.misterpemodder.shulkerboxtooltip.impl.config.annotation.Validator;
 import com.misterpemodder.shulkerboxtooltip.impl.config.validators.GreaterThanZero;
-import com.misterpemodder.shulkerboxtooltip.impl.util.Key;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
-public final class Configuration implements PreviewConfiguration {
-  @ConfigCategory
+public class Configuration implements PreviewConfiguration {
+  @ConfigCategory(ordinal = 1)
   public PreviewCategory preview;
 
-  @ConfigCategory
+  @ConfigCategory(ordinal = 2)
   public TooltipCategory tooltip;
 
-  @ConfigCategory
-  @Environment(EnvType.CLIENT)
-  public ColorsCategory colors;
-
-  @ConfigCategory
-  @Environment(EnvType.CLIENT)
-  public ControlsCategory controls;
-
-  @ConfigCategory
+  @ConfigCategory(ordinal = 5)
   public ServerCategory server;
 
   public Configuration() {
     this.preview = new PreviewCategory();
     this.tooltip = new TooltipCategory();
-    if (ShulkerBoxTooltip.isClient()) {
-      this.colors = new ColorsCategory();
-      this.controls = new ControlsCategory();
-    }
     this.server = new ServerCategory();
   }
 
@@ -176,36 +158,6 @@ public final class Configuration implements PreviewConfiguration {
   }
 
 
-  @Environment(EnvType.CLIENT)
-  public static class ColorsCategory {
-    @Comment("""
-        Controls whether the preview window should be colored.
-        (default value: true)""")
-    public boolean coloredPreview = true;
-
-    public ColorRegistry colors = ColorRegistryImpl.INSTANCE;
-  }
-
-
-  @Environment(EnvType.CLIENT)
-  public static class ControlsCategory {
-    @Comment("""
-        Press this key when hovering a container stack to open the preview window.
-        (default value: key.keyboard.left.shift)""")
-    public Key previewKey = Key.defaultPreviewKey();
-
-    @Comment("""
-        Press this key when hovering a container stack to open the full preview window.
-        (default value: key.keyboard.left.alt)""")
-    public Key fullPreviewKey = Key.defaultFullPreviewKey();
-
-    @Comment("""
-        Hold this key when previewing a stack to lock the tooltip.
-        (default value: key.keyboard.left.control)""")
-    public Key lockTooltipKey = Key.defaultLockTooltipKey();
-  }
-
-
   public static class ServerCategory {
     @Synchronize
     @RequiresRestart
@@ -254,6 +206,6 @@ public final class Configuration implements PreviewConfiguration {
 
   @Override
   public boolean useColors() {
-    return this.colors.coloredPreview;
+    return false;
   }
 }

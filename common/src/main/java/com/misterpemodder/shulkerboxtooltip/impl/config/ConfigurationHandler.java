@@ -2,6 +2,7 @@ package com.misterpemodder.shulkerboxtooltip.impl.config;
 
 import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
 import com.misterpemodder.shulkerboxtooltip.impl.config.Configuration.EnderChestSyncType;
+import com.misterpemodder.shulkerboxtooltip.impl.util.EnvironmentUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
@@ -27,12 +28,12 @@ public final class ConfigurationHandler {
       var errorMsg = ShulkerBoxTooltip.configTree.validate(config);
       if (errorMsg != null) {
         ShulkerBoxTooltip.LOGGER.error("Failed to load configuration, using default values: " + errorMsg);
-        return new Configuration();
+        return EnvironmentUtil.getInstance().makeConfiguration();
       }
       return config;
     } catch (SerializationException e) {
       ShulkerBoxTooltip.LOGGER.error("Failed to load configuration, using default values", e);
-      return new Configuration();
+      return EnvironmentUtil.getInstance().makeConfiguration();
     }
   }
 

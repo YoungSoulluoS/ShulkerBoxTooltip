@@ -1,6 +1,5 @@
 package com.misterpemodder.shulkerboxtooltip.impl.util;
 
-import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -33,23 +32,17 @@ public final class Key {
 
   @Nullable
   public static Key defaultPreviewKey() {
-    if (ShulkerBoxTooltip.isClient())
-      return new Key(InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_SHIFT));
-    return null;
+    return new Key(InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_SHIFT));
   }
 
   @Nullable
   public static Key defaultFullPreviewKey() {
-    if (ShulkerBoxTooltip.isClient())
-      return new Key(InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_ALT));
-    return null;
+    return new Key(InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_ALT));
   }
 
   @Nullable
   public static Key defaultLockTooltipKey() {
-    if (ShulkerBoxTooltip.isClient())
-      return new Key(InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_CONTROL));
-    return null;
+    return new Key(InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_CONTROL));
   }
 
   public static Key fromTranslationKey(@Nullable String translationKey) {

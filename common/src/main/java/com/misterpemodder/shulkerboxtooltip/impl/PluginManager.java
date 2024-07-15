@@ -3,8 +3,8 @@ package com.misterpemodder.shulkerboxtooltip.impl;
 import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
 import com.misterpemodder.shulkerboxtooltip.api.ShulkerBoxTooltipApi;
 import com.misterpemodder.shulkerboxtooltip.impl.color.ColorRegistryImpl;
-import com.misterpemodder.shulkerboxtooltip.impl.config.Configuration;
 import com.misterpemodder.shulkerboxtooltip.impl.provider.PreviewProviderRegistryImpl;
+import com.misterpemodder.shulkerboxtooltip.impl.util.EnvironmentUtil;
 import com.misterpemodder.shulkerboxtooltip.impl.util.NamedLogger;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.fabricmc.api.EnvType;
@@ -27,7 +27,7 @@ public final class PluginManager {
   private static boolean providersLoaded = false;
 
   static {
-    if (ShulkerBoxTooltip.isClient())
+    if (EnvironmentUtil.isClient())
       colorsLoaded = false;
   }
 
@@ -88,7 +88,7 @@ public final class PluginManager {
     }
 
     colorsLoaded = true;
-    ShulkerBoxTooltip.configTree.reload(new Configuration());
+    ShulkerBoxTooltip.configTree.reload(EnvironmentUtil.getInstance().makeConfiguration());
   }
 
   @Environment(EnvType.CLIENT)

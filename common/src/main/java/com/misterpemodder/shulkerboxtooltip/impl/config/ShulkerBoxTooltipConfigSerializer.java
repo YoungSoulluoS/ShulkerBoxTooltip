@@ -10,6 +10,7 @@ import com.misterpemodder.shulkerboxtooltip.api.color.ColorKey;
 import com.misterpemodder.shulkerboxtooltip.api.color.ColorRegistry;
 import com.misterpemodder.shulkerboxtooltip.impl.PluginManager;
 import com.misterpemodder.shulkerboxtooltip.impl.color.ColorRegistryImpl;
+import com.misterpemodder.shulkerboxtooltip.impl.util.EnvironmentUtil;
 import com.misterpemodder.shulkerboxtooltip.impl.util.Key;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -32,7 +33,7 @@ public final class ShulkerBoxTooltipConfigSerializer {
   private Jankson buildJankson() {
     Jankson.Builder builder = Jankson.builder();
 
-    if (ShulkerBoxTooltip.isClient())
+    if (EnvironmentUtil.isClient())
       ClientOnly.buildJankson(builder);
     return builder.build();
   }
@@ -48,7 +49,7 @@ public final class ShulkerBoxTooltipConfigSerializer {
     }
 
     // do not save the config to disk if it is not fully loaded.
-    if (ShulkerBoxTooltip.isClient() && !PluginManager.areColorsLoaded()) {
+    if (EnvironmentUtil.isClient() && !PluginManager.areColorsLoaded()) {
       ShulkerBoxTooltip.LOGGER.debug("Configuration is not fully loaded, not saving");
       return;
     }
@@ -70,7 +71,7 @@ public final class ShulkerBoxTooltipConfigSerializer {
     if (Files.exists(configPath)) {
       try {
         var obj = this.jankson.load(configPath.toFile());
-        var config = this.jankson.fromJson(obj, Configuration.class);
+        var config = this.jankson.fromJson(obj, EnvironmentUtil.getInstance().getConfigurationClass());
         if (config == null)
           throw new SerializationException("Failed to deserialize configuration");
         return config;
@@ -79,7 +80,7 @@ public final class ShulkerBoxTooltipConfigSerializer {
       }
     }
     ShulkerBoxTooltip.LOGGER.info("Could not find configuration file, creating default file");
-    return new Configuration();
+    return EnvironmentUtil.getInstance().makeConfiguration();
   }
 
   private Path getConfigPath() {

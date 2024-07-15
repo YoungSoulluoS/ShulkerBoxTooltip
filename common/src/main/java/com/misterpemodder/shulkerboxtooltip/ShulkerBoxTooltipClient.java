@@ -4,6 +4,7 @@ import com.misterpemodder.shulkerboxtooltip.api.PreviewContext;
 import com.misterpemodder.shulkerboxtooltip.api.PreviewType;
 import com.misterpemodder.shulkerboxtooltip.api.ShulkerBoxTooltipApi;
 import com.misterpemodder.shulkerboxtooltip.api.provider.PreviewProvider;
+import com.misterpemodder.shulkerboxtooltip.impl.config.ClientConfiguration;
 import com.misterpemodder.shulkerboxtooltip.impl.config.Configuration;
 import com.misterpemodder.shulkerboxtooltip.impl.network.ClientNetworking;
 import com.misterpemodder.shulkerboxtooltip.impl.util.Key;
@@ -43,12 +44,16 @@ public class ShulkerBoxTooltipClient {
     ClientNetworking.init();
   }
 
+  public static ClientConfiguration getConfig() {
+    return (ClientConfiguration) ShulkerBoxTooltip.config;
+  }
+
   private static boolean isPreviewRequested() {
-    return ShulkerBoxTooltip.config.preview.alwaysOn || ShulkerBoxTooltipClient.isPreviewKeyPressed();
+    return getConfig().preview.alwaysOn || ShulkerBoxTooltipClient.isPreviewKeyPressed();
   }
 
   private static List<Component> getTooltipHints(PreviewContext context, PreviewProvider provider) {
-    if (!ShulkerBoxTooltip.config.preview.enable || !provider.shouldDisplay(context))
+    if (!getConfig().preview.enable || !provider.shouldDisplay(context))
       return Collections.emptyList();
 
     boolean previewRequested = isPreviewRequested();
@@ -76,11 +81,11 @@ public class ShulkerBoxTooltipClient {
       return null;
 
     MutableComponent previewKeyHint = Component.literal("");
-    Component previewKeyText = ShulkerBoxTooltip.config.controls.previewKey.get().getDisplayName();
+    Component previewKeyText = getConfig().controls.previewKey.get().getDisplayName();
 
     if (previewRequested) {
-      previewKeyHint.append(ShulkerBoxTooltip.config.controls.fullPreviewKey.get().getDisplayName());
-      if (!ShulkerBoxTooltip.config.preview.alwaysOn) {
+      previewKeyHint.append(getConfig().controls.fullPreviewKey.get().getDisplayName());
+      if (!getConfig().preview.alwaysOn) {
         previewKeyHint.append("+").append(previewKeyText);
       }
     } else {
@@ -92,11 +97,11 @@ public class ShulkerBoxTooltipClient {
     String contentHint;
 
     if (ShulkerBoxTooltipApi.getCurrentPreviewType(fullPreviewAvailable) == PreviewType.NO_PREVIEW)
-      contentHint = ShulkerBoxTooltip.config.preview.swapModes ?
+      contentHint = getConfig().preview.swapModes ?
           provider.getFullTooltipHintLangKey(context) :
           provider.getTooltipHintLangKey(context);
     else
-      contentHint = ShulkerBoxTooltip.config.preview.swapModes ?
+      contentHint = getConfig().preview.swapModes ?
           provider.getTooltipHintLangKey(context) :
           provider.getFullTooltipHintLangKey(context);
     return previewKeyHint.append(
@@ -111,7 +116,7 @@ public class ShulkerBoxTooltipClient {
     MutableComponent lockKeyHint = Component.literal("");
     String lockKeyHintLangKey = provider.getLockKeyTooltipHintLangKey(context);
 
-    lockKeyHint.append(ShulkerBoxTooltip.config.controls.lockTooltipKey.get().getDisplayName());
+    lockKeyHint.append(ShulkerBoxTooltipClient.getConfig().controls.lockTooltipKey.get().getDisplayName());
     lockKeyHint.append(": ");
     lockKeyHint.withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD));
     lockKeyHint.append(
@@ -137,16 +142,16 @@ public class ShulkerBoxTooltipClient {
     wasPreviewAccessed = true;
 
     if (provider.showTooltipHints(context)) {
-      if (ShulkerBoxTooltip.config.tooltip.type == Configuration.ShulkerBoxTooltipType.MOD)
+      if (getConfig().tooltip.type == Configuration.ShulkerBoxTooltipType.MOD)
         tooltip.accept(provider.addTooltip(context));
-      if (ShulkerBoxTooltip.config.tooltip.showKeyHints) {
+      if (getConfig().tooltip.showKeyHints) {
         tooltip.accept(getTooltipHints(context, provider));
       }
     }
   }
 
   public static boolean isPreviewAvailable(PreviewContext context) {
-    if (ShulkerBoxTooltip.config.preview.enable) {
+    if (getConfig().preview.enable) {
       PreviewProvider provider = ShulkerBoxTooltipApi.getPreviewProviderForStack(context.stack());
 
       return provider != null && provider.shouldDisplay(context) && ShulkerBoxTooltipApi.getCurrentPreviewType(
@@ -161,7 +166,7 @@ public class ShulkerBoxTooltipClient {
     if (previewRequested && !hasFullPreviewMode) {
       return PreviewType.COMPACT;
     }
-    if (ShulkerBoxTooltip.config.preview.swapModes) {
+    if (getConfig().preview.swapModes) {
       if (previewRequested)
         return isFullPreviewKeyPressed() ? PreviewType.COMPACT : PreviewType.FULL;
     } else {
@@ -194,16 +199,14 @@ public class ShulkerBoxTooltipClient {
   }
 
   public static void updatePreviewKeys() {
-    Configuration config = ShulkerBoxTooltip.config;
-
-    if (config == null) {
+    if (getConfig() == null) {
       previewKeyPressed = false;
       fullPreviewKeyPressed = false;
       lockPreviewKeyPressed = false;
     } else {
-      previewKeyPressed = isKeyPressed(config.controls.previewKey);
-      fullPreviewKeyPressed = isKeyPressed(config.controls.fullPreviewKey);
-      lockPreviewKeyPressed = isKeyPressed(config.controls.lockTooltipKey);
+      previewKeyPressed = isKeyPressed(getConfig().controls.previewKey);
+      fullPreviewKeyPressed = isKeyPressed(getConfig().controls.fullPreviewKey);
+      lockPreviewKeyPressed = isKeyPressed(getConfig().controls.lockTooltipKey);
     }
   }
 }
