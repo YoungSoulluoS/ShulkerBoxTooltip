@@ -9,6 +9,7 @@ import com.misterpemodder.shulkerboxtooltip.impl.config.ConfigurationHandler;
 import com.misterpemodder.shulkerboxtooltip.impl.network.ServerNetworking;
 import com.misterpemodder.shulkerboxtooltip.impl.provider.*;
 import com.misterpemodder.shulkerboxtooltip.impl.tree.RootConfigNode;
+import com.misterpemodder.shulkerboxtooltip.impl.util.EnvironmentUtil;
 import com.misterpemodder.shulkerboxtooltip.impl.util.NamedLogger;
 import com.misterpemodder.shulkerboxtooltip.impl.util.ShulkerBoxTooltipUtil;
 import dev.architectury.injectables.annotations.ExpectPlatform;
@@ -42,9 +43,9 @@ public class ShulkerBoxTooltip implements ShulkerBoxTooltipApi {
   public static RootConfigNode<Configuration> configTree;
 
   public static void init() {
-    configTree = RootConfigNode.create(new Configuration());
+    configTree = RootConfigNode.create(EnvironmentUtil.getInstance().makeConfiguration());
     savedConfig = ConfigurationHandler.register();
-    config = new Configuration();
+    config = EnvironmentUtil.getInstance().makeConfiguration();
     configTree.copy(savedConfig, config);
     ServerNetworking.init();
   }
@@ -123,16 +124,6 @@ public class ShulkerBoxTooltip implements ShulkerBoxTooltipApi {
 
   private static String blockName(String block) {
     return "block.minecraft." + block;
-  }
-
-  /**
-   * @return Whether the current environment type (or Dist in forge terms) is the client.
-   */
-  @ExpectPlatform
-  @Contract(value = "-> _", pure = true)
-  public static boolean isClient() {
-    //noinspection Contract
-    throw new AssertionError("Missing implementation of ShulkerBoxTooltip.isClient()");
   }
 
   /**

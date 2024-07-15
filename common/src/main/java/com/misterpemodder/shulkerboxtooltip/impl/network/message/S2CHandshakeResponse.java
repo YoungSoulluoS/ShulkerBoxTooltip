@@ -6,6 +6,7 @@ import com.misterpemodder.shulkerboxtooltip.impl.config.ConfigurationHandler;
 import com.misterpemodder.shulkerboxtooltip.impl.network.ClientNetworking;
 import com.misterpemodder.shulkerboxtooltip.impl.network.ProtocolVersion;
 import com.misterpemodder.shulkerboxtooltip.impl.network.context.MessageContext;
+import com.misterpemodder.shulkerboxtooltip.impl.util.EnvironmentUtil;
 import net.minecraft.network.FriendlyByteBuf;
 
 import javax.annotation.Nullable;
@@ -28,7 +29,7 @@ public record S2CHandshakeResponse(@Nullable ProtocolVersion serverVersion, Conf
     @Override
     public S2CHandshakeResponse decode(FriendlyByteBuf buf) {
       ProtocolVersion serverVersion = ProtocolVersion.readFromPacketBuf(buf);
-      var config = new Configuration();
+      var config = EnvironmentUtil.getInstance().makeConfiguration();
       ShulkerBoxTooltip.configTree.copy(ShulkerBoxTooltip.config, config);
 
       if (serverVersion != null && serverVersion.major() == ProtocolVersion.CURRENT.major()) {

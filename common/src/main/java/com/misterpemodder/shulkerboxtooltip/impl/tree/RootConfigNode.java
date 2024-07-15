@@ -1,7 +1,6 @@
 package com.misterpemodder.shulkerboxtooltip.impl.tree;
 
 import com.google.common.collect.ImmutableList;
-import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
 import com.misterpemodder.shulkerboxtooltip.api.color.ColorKey;
 import com.misterpemodder.shulkerboxtooltip.api.color.ColorRegistry;
 import com.misterpemodder.shulkerboxtooltip.impl.config.annotation.ConfigCategory;
@@ -10,7 +9,9 @@ import com.misterpemodder.shulkerboxtooltip.impl.config.annotation.Synchronize;
 import com.misterpemodder.shulkerboxtooltip.impl.config.annotation.Validator;
 import com.misterpemodder.shulkerboxtooltip.impl.tree.ValueConfigNode.ValueReader;
 import com.misterpemodder.shulkerboxtooltip.impl.tree.ValueConfigNode.ValueWriter;
+import com.misterpemodder.shulkerboxtooltip.impl.util.EnvironmentUtil;
 import com.misterpemodder.shulkerboxtooltip.impl.util.ShulkerBoxTooltipUtil;
+import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.resources.language.I18n;
@@ -22,6 +23,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InaccessibleObjectException;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import static com.misterpemodder.shulkerboxtooltip.impl.util.ShulkerBoxTooltipUtil.id;
 
@@ -144,15 +147,15 @@ public final class RootConfigNode<C> implements ConfigNode<C> {
     @NotNull
     public RootConfigNode<C> build() {
       Class<?> configClass = this.defaultConfig.getClass();
-      ImmutableList.Builder<CategoryConfigNode<C>> categories = ImmutableList.builder();
+      ImmutableList<CategoryConfigNode<C>> categories = Arrays.stream(configClass.getFields()) //
+          .filter(field -> field.isAnnotationPresent(ConfigCategory.class)) //
+          .map(field -> Pair.of(field.getAnnotation(ConfigCategory.class).ordinal(), field)) //
+          .sorted(Comparator.comparingInt(Pair::getFirst))
+          .map(pair -> this.createCategoryNode(pair.getSecond()))
+          .collect(ImmutableList.toImmutableList());
 
-      for (Field field : configClass.getDeclaredFields()) {
-        if (field.isAnnotationPresent(ConfigCategory.class)) {
-          categories.add(this.createCategoryNode(field));
-        }
-      }
       this.defaultConfig = null;
-      return new RootConfigNode<>(categories.build());
+      return new RootConfigNode<>(categories);
     }
 
     private CategoryConfigNode<C> createCategoryNode(Field categoryField) {
@@ -186,7 +189,7 @@ public final class RootConfigNode<C> implements ConfigNode<C> {
         throw new IllegalArgumentException("Failed to get value field", e);
       }
 
-      if (ShulkerBoxTooltip.isClient() && defaultValue instanceof ColorRegistry colorRegistry) {
+      if (EnvironmentUtil.isClient() && defaultValue instanceof ColorRegistry colorRegistry) {
         this.addColorRegistryField(colorRegistry, categoryBuilder);
         return;
       }
@@ -215,7 +218,7 @@ public final class RootConfigNode<C> implements ConfigNode<C> {
             .valueWriter(this.makeValueWriter(type, categoryField, valueField))
             .requiresRestart(valueField.isAnnotationPresent(RequiresRestart.class));
 
-        if (ShulkerBoxTooltip.isClient() && I18n.exists(prefixKey))
+        if (EnvironmentUtil.isClient() && I18n.exists(prefixKey))
           valueBuilder.prefix(Component.translatable(prefixKey));
 
         if (valueField.isAnnotationPresent(Synchronize.class))

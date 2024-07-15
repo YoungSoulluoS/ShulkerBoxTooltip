@@ -6,6 +6,7 @@ import com.misterpemodder.shulkerboxtooltip.impl.network.channel.C2SChannel;
 import com.misterpemodder.shulkerboxtooltip.impl.network.context.C2SMessageContext;
 import com.misterpemodder.shulkerboxtooltip.impl.network.context.MessageContext;
 import com.misterpemodder.shulkerboxtooltip.impl.network.message.MessageType;
+import com.misterpemodder.shulkerboxtooltip.impl.util.EnvironmentUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -21,7 +22,7 @@ class FabricC2SChannel<T> extends FabricChannel<T> implements C2SChannel<T> {
 
   public FabricC2SChannel(ResourceLocation id, MessageType<T> type) {
     super(id, type);
-    if (ShulkerBoxTooltip.isClient())
+    if (EnvironmentUtil.isClient())
       this.serverRegistered = false;
   }
 

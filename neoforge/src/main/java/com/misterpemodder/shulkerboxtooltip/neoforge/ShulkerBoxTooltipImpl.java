@@ -4,13 +4,11 @@ import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
 import com.misterpemodder.shulkerboxtooltip.api.neoforge.ShulkerBoxTooltipPlugin;
 import com.misterpemodder.shulkerboxtooltip.impl.network.neoforge.ClientNetworkingImpl;
 import com.misterpemodder.shulkerboxtooltip.impl.network.neoforge.ServerNetworkingImpl;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import org.jetbrains.annotations.Contract;
@@ -35,13 +33,6 @@ public class ShulkerBoxTooltipImpl extends ShulkerBoxTooltip {
   public static void onRegisterPayloads(RegisterPayloadHandlersEvent event) {
     ServerNetworkingImpl.S2C_CHANNELS.values().forEach(channel -> channel.registerPayloadTypeDeferred(event));
     ClientNetworkingImpl.C2S_CHANNELS.values().forEach(channel -> channel.registerPayloadTypeDeferred(event));
-  }
-
-  /**
-   * Implementation of {@link ShulkerBoxTooltip#isClient()}.
-   */
-  public static boolean isClient() {
-    return FMLEnvironment.dist == Dist.CLIENT;
   }
 
   /**
