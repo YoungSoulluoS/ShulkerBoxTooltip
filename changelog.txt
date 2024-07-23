@@ -1,3 +1,8 @@
+3.4.5+1.19.4:
+- Added highlight for the currently selected slot in the preview window.
+- Internal: Switch to official Mojang mappings.
+
+====================================================================================================
 3.4.4+1.19.4:
 - Added German localization by ReneMuetti.
 
