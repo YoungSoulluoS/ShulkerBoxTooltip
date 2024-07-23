@@ -10,14 +10,15 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public class ClientNetworkingImpl extends ClientNetworking {
-  private final static Map<Identifier, RegistrationChangeListener> REGISTRATION_CHANGE_LISTENERS = new HashMap<>();
+  private final static Map<ResourceLocation, RegistrationChangeListener> REGISTRATION_CHANGE_LISTENERS =
+      new HashMap<>();
 
   /**
    * Implements {@link ClientNetworking#init()}.
@@ -32,27 +33,27 @@ public class ClientNetworkingImpl extends ClientNetworking {
   }
 
   /**
-   * Implements {@link ClientNetworking#registerS2CReceiver(Identifier, PacketReceiver)} ()}.
+   * Implements {@link ClientNetworking#registerS2CReceiver(ResourceLocation, PacketReceiver)} ()}.
    */
-  public static void registerS2CReceiver(Identifier channelId, PacketReceiver receiver) {
+  public static void registerS2CReceiver(ResourceLocation channelId, PacketReceiver receiver) {
     ClientPlayNetworking.registerReceiver(channelId, (client, handler, buf, responseSender) -> receiver.handle(buf));
   }
 
   /**
-   * Implements {@link ClientNetworking#unregisterS2CReceiver(Identifier)} ()}.
+   * Implements {@link ClientNetworking#unregisterS2CReceiver(ResourceLocation)} ()}.
    */
-  public static void unregisterS2CReceiver(Identifier channelId) {
+  public static void unregisterS2CReceiver(ResourceLocation channelId) {
     ClientPlayNetworking.unregisterReceiver(channelId);
   }
 
   /**
-   * Implements {@link ClientNetworking#addRegistrationChangeListener(Identifier, RegistrationChangeListener)} ()}.
+   * Implements {@link ClientNetworking#addRegistrationChangeListener(ResourceLocation, RegistrationChangeListener)} ()}.
    */
-  public static void addRegistrationChangeListener(Identifier channelId, RegistrationChangeListener listener) {
+  public static void addRegistrationChangeListener(ResourceLocation channelId, RegistrationChangeListener listener) {
     REGISTRATION_CHANGE_LISTENERS.put(channelId, listener);
   }
 
-  private static void dispatchRegistrationChangeEvent(Identifier channelId, RegistrationChangeType type) {
+  private static void dispatchRegistrationChangeEvent(ResourceLocation channelId, RegistrationChangeType type) {
     RegistrationChangeListener listener = REGISTRATION_CHANGE_LISTENERS.get(channelId);
     if (listener != null)
       listener.onRegistrationChange(type);

@@ -6,10 +6,10 @@ import com.misterpemodder.shulkerboxtooltip.api.ShulkerBoxTooltipApi;
 import com.misterpemodder.shulkerboxtooltip.api.provider.PreviewProvider;
 import com.misterpemodder.shulkerboxtooltip.api.renderer.PreviewRenderer;
 import com.misterpemodder.shulkerboxtooltip.impl.config.Configuration.PreviewPosition;
-import com.misterpemodder.shulkerboxtooltip.impl.renderer.DrawContext;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.screen.Screen;
+import com.misterpemodder.shulkerboxtooltip.impl.renderer.GuiGraphics;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
 
 public class PreviewTooltipComponent extends PositionAwareTooltipComponent {
   private final PreviewRenderer renderer;
@@ -34,7 +34,7 @@ public class PreviewTooltipComponent extends PositionAwareTooltipComponent {
   }
 
   @Override
-  public int getWidth(TextRenderer textRenderer) {
+  public int getWidth(Font font) {
     this.prepareRenderer();
     if (ShulkerBoxTooltip.config.preview.position == PreviewPosition.INSIDE)
       return this.renderer.getWidth() + 2;
@@ -42,29 +42,29 @@ public class PreviewTooltipComponent extends PositionAwareTooltipComponent {
   }
 
   @Override
-  public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
+  public void drawItems(Font font, int x, int y, GuiGraphics graphics) {
     this.prepareRenderer();
-    this.drawAt(x, y, context, textRenderer, 0, 0);
+    this.drawAt(x, y, graphics, font, 0, 0);
   }
 
   @Override
-  public void drawItemsWithTooltipPosition(TextRenderer textRenderer, int x, int y, DrawContext context,
-      int tooltipTopY, int tooltipBottomY, int mouseX, int mouseY) {
+  public void drawItemsWithTooltipPosition(Font font, int x, int y, GuiGraphics graphics, int tooltipTopY,
+      int tooltipBottomY, int mouseX, int mouseY) {
     PreviewPosition position = ShulkerBoxTooltip.config.preview.position;
 
     this.prepareRenderer();
     if (position != PreviewPosition.INSIDE) {
       int h = this.renderer.getHeight();
       int w = this.renderer.getWidth();
-      int screenW = context.getScaledWindowWidth();
-      int screenH = context.getScaledWindowHeight();
+      int screenW = graphics.getScaledWindowWidth();
+      int screenH = graphics.getScaledWindowHeight();
 
       x = Math.min(x - 4, screenW - w);
       y = tooltipBottomY;
       if (position == PreviewPosition.OUTSIDE_TOP || (position == PreviewPosition.OUTSIDE && y + h > screenH))
         y = tooltipTopY - h;
     }
-    this.drawAt(x, y, context, textRenderer, mouseX, mouseY);
+    this.drawAt(x, y, graphics, font, mouseX, mouseY);
   }
 
   private void prepareRenderer() {
@@ -73,14 +73,14 @@ public class PreviewTooltipComponent extends PositionAwareTooltipComponent {
         ShulkerBoxTooltipApi.getCurrentPreviewType(this.provider.isFullPreviewAvailable(this.context)));
   }
 
-  private void drawAt(int x, int y, DrawContext context, TextRenderer textRenderer, int mouseX, int mouseY) {
-    Screen screen = context.getScreen();
+  private void drawAt(int x, int y, GuiGraphics graphics, Font font, int mouseX, int mouseY) {
+    Screen screen = graphics.getScreen();
     if (screen != null) {
-      this.renderer.draw(x, y, context.getMatrices(), textRenderer, context.getItemRenderer(),
-          MinecraftClient.getInstance().getTextureManager(), context.getScreen(), mouseX, mouseY);
+      this.renderer.draw(x, y, graphics.getPoseStack(), font, graphics.getItemRenderer(),
+          Minecraft.getInstance().getTextureManager(), graphics.getScreen(), mouseX, mouseY);
     } else {
-      this.renderer.draw(x, y, context.getMatrices(), textRenderer, context.getItemRenderer(),
-          MinecraftClient.getInstance().getTextureManager());
+      this.renderer.draw(x, y, graphics.getPoseStack(), font, graphics.getItemRenderer(),
+          Minecraft.getInstance().getTextureManager());
     }
   }
 }

@@ -1,28 +1,28 @@
 package com.misterpemodder.shulkerboxtooltip.impl.renderer;
 
 import com.misterpemodder.shulkerboxtooltip.impl.tooltip.PositionAwareTooltipComponent;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.util.math.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 
 import javax.annotation.Nullable;
 
 /**
  * Polyfill for the DrawContext class of Minecraft 1.20.
  */
-public final class DrawContext implements DrawContextExtensions {
+public final class GuiGraphics implements GuiGraphicsExtensions {
   @Nullable
   private final Screen screen;
-  private MatrixStack matrices;
+  private PoseStack poseStack;
   private ItemRenderer itemRenderer;
   private int tooltipTopYPosition = 0;
   private int tooltipBottomYPosition = 0;
   private int mouseX = 0;
   private int mouseY = 0;
 
-  public DrawContext(@Nullable Screen screen) {
+  public GuiGraphics(@Nullable Screen screen) {
     this.screen = screen;
   }
 
@@ -34,26 +34,26 @@ public final class DrawContext implements DrawContextExtensions {
     return this.screen == null ? 0 : this.screen.height;
   }
 
-  public MatrixStack getMatrices() {
-    return this.matrices;
+  public PoseStack getPoseStack() {
+    return this.poseStack;
   }
 
   public ItemRenderer getItemRenderer() {
     return this.itemRenderer;
   }
 
-  public void update(MatrixStack matrices, ItemRenderer itemRenderer) {
-    this.matrices = matrices;
+  public void update(PoseStack poseStack, ItemRenderer itemRenderer) {
+    this.poseStack = poseStack;
     this.itemRenderer = itemRenderer;
   }
 
-  public void drawItems(TooltipComponent component, TextRenderer textRenderer, int x, int y) {
+  public void drawItems(ClientTooltipComponent component, Font font, int x, int y) {
     if (component instanceof PositionAwareTooltipComponent posAwareComponent) {
       //noinspection ConstantConditions
-      posAwareComponent.drawItemsWithTooltipPosition(textRenderer, x, y, this, this.getTooltipTopYPosition(),
+      posAwareComponent.drawItemsWithTooltipPosition(font, x, y, this, this.getTooltipTopYPosition(),
           this.getTooltipBottomYPosition(), this.getMouseX(), this.getMouseY());
     } else
-      component.drawItems(textRenderer, x, y, this.matrices, this.itemRenderer);
+      component.renderImage(font, x, y, this.poseStack, this.itemRenderer);
   }
 
   @Override

@@ -7,11 +7,11 @@ import com.misterpemodder.shulkerboxtooltip.impl.network.message.C2SMessages;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 
@@ -30,7 +30,7 @@ public class ClientNetworking {
    * Corresponds to Fabric's <code>ClientPlayConnectionEvents.JOIN</code> and
    * Forge's <code>ClientPlayerNetworkEvent.LoggedInEvent</code> events.
    */
-  public static void onJoinServer(MinecraftClient client) {
+  public static void onJoinServer(Minecraft client) {
     client.execute(() -> {
       PluginManager.loadColors();
       PluginManager.loadProviders();
@@ -39,7 +39,7 @@ public class ClientNetworking {
 
     // Re-init some config values before syncing
     serverProtocolVersion = null;
-    if (!MinecraftClient.getInstance().isIntegratedServerRunning())
+    if (!Minecraft.getInstance().hasSingleplayerServer())
       ConfigurationHandler.reinitClientSideSyncedValues(ShulkerBoxTooltip.config);
     C2SMessages.attemptHandshake();
   }
@@ -51,8 +51,8 @@ public class ClientNetworking {
    * @param buf       The packet's data.
    * @return A custom vanilla packet.
    */
-  public static Packet<?> createC2SPacket(Identifier channelId, PacketByteBuf buf) {
-    return new CustomPayloadC2SPacket(channelId, buf);
+  public static Packet<?> createC2SPacket(ResourceLocation channelId, FriendlyByteBuf buf) {
+    return new ServerboundCustomPayloadPacket(channelId, buf);
   }
 
   /**
@@ -70,7 +70,7 @@ public class ClientNetworking {
    * @param receiver  The handling function.
    */
   @ExpectPlatform
-  public static void registerS2CReceiver(Identifier channelId, PacketReceiver receiver) {
+  public static void registerS2CReceiver(ResourceLocation channelId, PacketReceiver receiver) {
     throw new AssertionError("Missing implementation of ClientNetworking.registerS2CReceiver()");
   }
 
@@ -82,7 +82,7 @@ public class ClientNetworking {
    * @param channelId The channel identifier.
    */
   @ExpectPlatform
-  public static void unregisterS2CReceiver(Identifier channelId) {
+  public static void unregisterS2CReceiver(ResourceLocation channelId) {
     throw new AssertionError("Missing implementation of ClientNetworking.unregisterS2CReceiver()");
   }
 
@@ -93,7 +93,7 @@ public class ClientNetworking {
    * @param listener  The listener to call on registration changes.
    */
   @ExpectPlatform
-  public static void addRegistrationChangeListener(Identifier channelId, RegistrationChangeListener listener) {
+  public static void addRegistrationChangeListener(ResourceLocation channelId, RegistrationChangeListener listener) {
     throw new AssertionError("Missing implementation of ClientNetworking.addRegistrationChangeListener()");
   }
 
@@ -107,7 +107,7 @@ public class ClientNetworking {
      *
      * @param buf The packet data.
      */
-    void handle(PacketByteBuf buf);
+    void handle(FriendlyByteBuf buf);
   }
 
 

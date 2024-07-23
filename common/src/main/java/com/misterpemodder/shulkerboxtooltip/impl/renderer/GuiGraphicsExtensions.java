@@ -1,8 +1,8 @@
 package com.misterpemodder.shulkerboxtooltip.impl.renderer;
 
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 
-public interface DrawContextExtensions {
+public interface GuiGraphicsExtensions {
   void setTooltipTopYPosition(int topY);
 
   void setTooltipBottomYPosition(int bottomY);

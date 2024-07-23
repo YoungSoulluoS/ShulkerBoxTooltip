@@ -3,19 +3,19 @@ package com.misterpemodder.shulkerboxtooltip.impl.renderer;
 import com.misterpemodder.shulkerboxtooltip.api.PreviewType;
 import com.misterpemodder.shulkerboxtooltip.api.color.ColorKey;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.resources.ResourceLocation;
 
 @Environment(EnvType.CLIENT)
 public class ModPreviewRenderer extends BasePreviewRenderer {
-  private static final Identifier DEFAULT_TEXTURE_LIGHT = new Identifier("shulkerboxtooltip",
+  private static final ResourceLocation DEFAULT_TEXTURE_LIGHT = new ResourceLocation("shulkerboxtooltip",
       "textures/gui/shulker_box_tooltip.png");
   public static final ModPreviewRenderer INSTANCE = new ModPreviewRenderer();
 
@@ -52,7 +52,7 @@ public class ModPreviewRenderer extends BasePreviewRenderer {
    * Sets the texture to be used.
    */
   private void setTexture() {
-    Identifier texture = this.textureOverride;
+    ResourceLocation texture = this.textureOverride;
 
     if (texture == null) {
       texture = DEFAULT_TEXTURE_LIGHT;
@@ -60,7 +60,7 @@ public class ModPreviewRenderer extends BasePreviewRenderer {
     RenderSystem.setShaderTexture(0, texture);
   }
 
-  private void drawBackground(int x, int y, MatrixStack matrices) {
+  private void drawBackground(int x, int y, PoseStack poseStack) {
     int invSize = this.getInvSize();
     int xOffset = 7;
     int yOffset = 7;
@@ -75,23 +75,23 @@ public class ModPreviewRenderer extends BasePreviewRenderer {
     for (int size = rowSize; size > 0; size -= 9) {
       int s = Math.min(size, 9);
 
-      DrawableHelper.drawTexture(matrices, x + xOffset, y, 0, 7, 0, s * 18, 7, 256, 256);
+      GuiComponent.blit(poseStack, x + xOffset, y, 0, 7, 0, s * 18, 7, 256, 256);
       xOffset += s * 18;
     }
 
     while (invSize > 0) {
       xOffset = 7;
       // left side
-      DrawableHelper.drawTexture(matrices, x, y + yOffset, 0, 0, rowTexYPos, 7, 18, 256, 256);
+      GuiComponent.blit(poseStack, x, y + yOffset, 0, 0, rowTexYPos, 7, 18, 256, 256);
       for (int rSize = rowSize; rSize > 0; rSize -= 9) {
         int s = Math.min(rSize, 9);
 
         // center
-        DrawableHelper.drawTexture(matrices, x + xOffset, y + yOffset, 0, 7, rowTexYPos, s * 18, 18, 256, 256);
+        GuiComponent.blit(poseStack, x + xOffset, y + yOffset, 0, 7, rowTexYPos, s * 18, 18, 256, 256);
         xOffset += s * 18;
       }
       // right side
-      DrawableHelper.drawTexture(matrices, x + xOffset, y + yOffset, 0, 169, rowTexYPos, 7, 18, 256, 256);
+      GuiComponent.blit(poseStack, x + xOffset, y + yOffset, 0, 169, rowTexYPos, 7, 18, 256, 256);
       yOffset += 18;
       invSize -= rowSize;
       rowTexYPos = rowTexYPos >= 43 ? 7 : rowTexYPos + 18;
@@ -102,30 +102,30 @@ public class ModPreviewRenderer extends BasePreviewRenderer {
       int s = Math.min(size, 9);
 
       // bottom side
-      DrawableHelper.drawTexture(matrices, x + xOffset, y + yOffset, 0, 7, 61, s * 18, 7, 256, 256);
+      GuiComponent.blit(poseStack, x + xOffset, y + yOffset, 0, 7, 61, s * 18, 7, 256, 256);
       xOffset += s * 18;
     }
 
     // top-left corner
-    DrawableHelper.drawTexture(matrices, x, y, 0, 0, 0, 7, 7, 256, 256);
+    GuiComponent.blit(poseStack, x, y, 0, 0, 0, 7, 7, 256, 256);
     // top-right corner
-    DrawableHelper.drawTexture(matrices, x + rowWidth + 7, y, 0, 169, 0, 7, 7, 256, 256);
+    GuiComponent.blit(poseStack, x + rowWidth + 7, y, 0, 169, 0, 7, 7, 256, 256);
     // bottom-right corner
-    DrawableHelper.drawTexture(matrices, x + rowWidth + 7, y + yOffset, 0, 169, 61, 7, 7, 256, 256);
+    GuiComponent.blit(poseStack, x + rowWidth + 7, y + yOffset, 0, 169, 61, 7, 7, 256, 256);
     // bottom-left corner
-    DrawableHelper.drawTexture(matrices, x, y + yOffset, 0, 0, 61, 7, 7, 256, 256);
+    GuiComponent.blit(poseStack, x, y + yOffset, 0, 0, 61, 7, 7, 256, 256);
 
     RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
   }
 
   @Override
-  public void draw(int x, int y, MatrixStack matrices, TextRenderer textRenderer, ItemRenderer itemRenderer,
+  public void draw(int x, int y, PoseStack poseStack, Font font, ItemRenderer itemRenderer,
       TextureManager textureManager, Screen screen, int mouseX, int mouseY) {
     if (this.items.isEmpty() || this.previewType == PreviewType.NO_PREVIEW)
       return;
     RenderSystem.enableDepthTest();
-    this.drawBackground(x, y, matrices);
-    this.drawItems(x, y, matrices, textRenderer, itemRenderer);
-    this.drawInnerTooltip(x, y, matrices, screen, mouseX, mouseY);
+    this.drawBackground(x, y, poseStack);
+    this.drawItems(x, y, poseStack, font, itemRenderer);
+    this.drawInnerTooltip(x, y, poseStack, screen, mouseX, mouseY);
   }
 }

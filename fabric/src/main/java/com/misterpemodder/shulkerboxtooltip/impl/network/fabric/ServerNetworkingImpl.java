@@ -8,16 +8,16 @@ import com.misterpemodder.shulkerboxtooltip.impl.network.message.S2CMessages;
 import net.fabricmc.fabric.api.networking.v1.S2CPlayChannelEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public final class ServerNetworkingImpl {
-  private final static Map<Identifier, ServerNetworking.RegistrationChangeListener> REGISTRATION_CHANGE_LISTENERS =
-      new HashMap<>();
+  private final static Map<ResourceLocation, ServerNetworking.RegistrationChangeListener>
+      REGISTRATION_CHANGE_LISTENERS = new HashMap<>();
 
   /**
    * Implements {@link ServerNetworking#init()}.
@@ -32,11 +32,11 @@ public final class ServerNetworkingImpl {
   }
 
   /**
-   * Implements {@link ServerNetworking#registerC2SReceiver(Identifier, ServerPlayerEntity, ServerNetworking.PacketReceiver)}.
+   * Implements {@link ServerNetworking#registerC2SReceiver(ResourceLocation, ServerPlayer, ServerNetworking.PacketReceiver)}.
    */
-  public static void registerC2SReceiver(Identifier channelId, ServerPlayerEntity player,
+  public static void registerC2SReceiver(ResourceLocation channelId, ServerPlayer player,
       ServerNetworking.PacketReceiver receiver) {
-    ServerPlayNetworkHandler handler = player.networkHandler;
+    ServerGamePacketListenerImpl handler = player.connection;
 
     if (handler == null) {
       ShulkerBoxTooltip.LOGGER.error("Cannot register packet receiver for " + channelId + ", player is not in game");
@@ -47,10 +47,10 @@ public final class ServerNetworkingImpl {
   }
 
   /**
-   * Implements {@link ServerNetworking#unregisterC2SReceiver(Identifier, ServerPlayerEntity)}.
+   * Implements {@link ServerNetworking#unregisterC2SReceiver(ResourceLocation, ServerPlayer)}.
    */
-  public static void unregisterC2SReceiver(Identifier channelId, ServerPlayerEntity player) {
-    ServerPlayNetworkHandler handler = player.networkHandler;
+  public static void unregisterC2SReceiver(ResourceLocation channelId, ServerPlayer player) {
+    ServerGamePacketListenerImpl handler = player.connection;
 
     if (handler != null) {
       ServerPlayNetworking.unregisterReceiver(handler, channelId);
@@ -58,14 +58,14 @@ public final class ServerNetworkingImpl {
   }
 
   /**
-   * Implements {@link ServerNetworking#addRegistrationChangeListener(Identifier, ServerNetworking.RegistrationChangeListener)}.
+   * Implements {@link ServerNetworking#addRegistrationChangeListener(ResourceLocation, ServerNetworking.RegistrationChangeListener)}.
    */
-  public static void addRegistrationChangeListener(Identifier channelId,
+  public static void addRegistrationChangeListener(ResourceLocation channelId,
       ServerNetworking.RegistrationChangeListener listener) {
     REGISTRATION_CHANGE_LISTENERS.put(channelId, listener);
   }
 
-  private static void dispatchRegistrationChangeEvent(Identifier channelId, ServerPlayerEntity sender,
+  private static void dispatchRegistrationChangeEvent(ResourceLocation channelId, ServerPlayer sender,
       RegistrationChangeType type) {
     ServerNetworking.RegistrationChangeListener listener = REGISTRATION_CHANGE_LISTENERS.get(channelId);
     if (listener != null)

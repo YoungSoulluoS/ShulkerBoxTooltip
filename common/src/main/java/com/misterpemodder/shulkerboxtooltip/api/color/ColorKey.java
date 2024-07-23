@@ -5,7 +5,7 @@ import com.misterpemodder.shulkerboxtooltip.impl.color.ColorKeyImpl;
 import com.misterpemodder.shulkerboxtooltip.impl.util.ShulkerBoxTooltipUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.DyeColor;
+import net.minecraft.world.item.DyeColor;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Arrays;
@@ -186,7 +186,7 @@ public interface ColorKey {
   }
 
   private static ColorKey ofDye(DyeColor dye) {
-    var color = dye.getColorComponents();
+    var color = dye.getTextureDiffuseColors();
     var clamped = new float[] {Math.max(0.15f, color[0]), Math.max(0.15f, color[1]), Math.max(0.15f, color[2])};
     return new ColorKeyImpl(Arrays.copyOf(clamped, 3), clamped);
   }

@@ -3,8 +3,8 @@ package com.misterpemodder.shulkerboxtooltip.api;
 import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
 import com.misterpemodder.shulkerboxtooltip.api.config.PreviewConfiguration;
 import com.misterpemodder.shulkerboxtooltip.impl.PreviewContextImpl;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 
@@ -40,7 +40,7 @@ public interface PreviewContext {
    */
   @Nonnull
   @Contract("_, _ -> new")
-  static PreviewContext of(ItemStack stack, @Nullable PlayerEntity owner) {
+  static PreviewContext of(ItemStack stack, @Nullable Player owner) {
     return new PreviewContextImpl(stack.copy(), owner, ShulkerBoxTooltip.config);
   }
 
@@ -60,7 +60,7 @@ public interface PreviewContext {
    * @since 3.1.0
    */
   @Nullable
-  PlayerEntity owner();
+  Player owner();
 
   /**
    * @return the configuration in use for this context.
@@ -88,7 +88,7 @@ public interface PreviewContext {
   @Nullable
   @Deprecated(forRemoval = true)
   @ApiStatus.ScheduledForRemoval(inVersion = "4.0.0")
-  default PlayerEntity getOwner() {
+  default Player getOwner() {
     return this.owner();
   }
 }

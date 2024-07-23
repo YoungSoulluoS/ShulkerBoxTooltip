@@ -6,10 +6,10 @@ import com.google.common.collect.ImmutableSet;
 import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltip;
 import com.misterpemodder.shulkerboxtooltip.api.provider.PreviewProvider;
 import com.misterpemodder.shulkerboxtooltip.api.provider.PreviewProviderRegistry;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -19,7 +19,7 @@ import java.util.Set;
 
 public class PreviewProviderRegistryImpl implements PreviewProviderRegistry {
   private boolean locked;
-  private final BiMap<Identifier, PreviewProvider> providerIds;
+  private final BiMap<ResourceLocation, PreviewProvider> providerIds;
   private final Map<Item, PreviewProvider> providerItems;
 
   public static final PreviewProviderRegistryImpl INSTANCE = new PreviewProviderRegistryImpl();
@@ -35,7 +35,7 @@ public class PreviewProviderRegistryImpl implements PreviewProviderRegistry {
   }
 
   @Override
-  public void register(Identifier id, PreviewProvider provider, Iterable<Item> items) {
+  public void register(ResourceLocation id, PreviewProvider provider, Iterable<Item> items) {
     if (this.locked)
       throw new IllegalStateException(
           "attempted to register PreviewProvider outside ShulkerBoxTooltipApi.registerProviders");
@@ -52,8 +52,8 @@ public class PreviewProviderRegistryImpl implements PreviewProviderRegistry {
       if (previousProvider == null) {
         this.providerItems.put(item, provider);
       } else {
-        Identifier previousId = this.getId(previousProvider);
-        Identifier itemId = Registries.ITEM.getId(item);
+        ResourceLocation previousId = this.getId(previousProvider);
+        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
 
         if (priority > previousProvider.getPriority()) {
           ShulkerBoxTooltip.LOGGER.info(
@@ -68,12 +68,12 @@ public class PreviewProviderRegistryImpl implements PreviewProviderRegistry {
   }
 
   @Override
-  public void register(Identifier id, PreviewProvider provider, Item... items) {
+  public void register(ResourceLocation id, PreviewProvider provider, Item... items) {
     this.register(id, provider, Arrays.asList(items));
   }
 
   @Override
-  public PreviewProvider get(Identifier id) {
+  public PreviewProvider get(ResourceLocation id) {
     return this.providerIds.get(id);
   }
 
@@ -88,7 +88,7 @@ public class PreviewProviderRegistryImpl implements PreviewProviderRegistry {
   }
 
   @Override
-  public Identifier getId(PreviewProvider provider) {
+  public ResourceLocation getId(PreviewProvider provider) {
     return this.providerIds.inverse().get(provider);
   }
 
@@ -111,7 +111,7 @@ public class PreviewProviderRegistryImpl implements PreviewProviderRegistry {
 
   @Override
   @Nonnull
-  public Set<Identifier> getIds() {
+  public Set<ResourceLocation> getIds() {
     return this.providerIds.keySet();
   }
 }

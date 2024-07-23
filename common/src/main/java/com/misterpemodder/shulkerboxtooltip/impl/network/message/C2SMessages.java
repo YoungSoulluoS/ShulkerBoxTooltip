@@ -7,7 +7,7 @@ import com.misterpemodder.shulkerboxtooltip.impl.network.channel.C2SChannel;
 import com.misterpemodder.shulkerboxtooltip.impl.util.ShulkerBoxTooltipUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 /**
  * The client to server messages of ShulkerBoxTooltip.
@@ -35,7 +35,7 @@ public final class C2SMessages {
    *
    * @param player The player.
    */
-  public static void registerAllFor(ServerPlayerEntity player) {
+  public static void registerAllFor(ServerPlayer player) {
     HANDSHAKE_START.registerFor(player);
     ENDER_CHEST_UPDATE_REQUEST.registerFor(player);
   }

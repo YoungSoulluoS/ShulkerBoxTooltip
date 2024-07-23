@@ -7,13 +7,13 @@ import com.misterpemodder.shulkerboxtooltip.api.provider.PreviewProvider;
 import com.misterpemodder.shulkerboxtooltip.impl.config.Configuration;
 import com.misterpemodder.shulkerboxtooltip.impl.renderer.ModPreviewRenderer;
 import com.misterpemodder.shulkerboxtooltip.impl.renderer.VanillaPreviewRenderer;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.TextureManager;
 
 import javax.annotation.Nonnull;
 
@@ -99,17 +99,17 @@ public interface PreviewRenderer {
    * @param x              X position of the preview's upper-right corner.
    * @param y              Y position of the preview's upper-right corner.
    * @param z              The depth of the preview.
-   * @param matrices       The transformation matrices.
+   * @param poseStack      The transformation matrix.
    * @param itemRenderer   The item renderer.
-   * @param textRenderer   The text renderer.
+   * @param font           The text renderer.
    * @param textureManager The texture manager.
    * @since 3.0.0
    * @deprecated Will be removed in version 4.0.0.
    * The {@code z} depth parameter is now part of the matrix stack.
-   * Use {@link #draw(int, int, MatrixStack, TextRenderer, ItemRenderer, TextureManager)} instead.
+   * Use {@link #draw(int, int, PoseStack, Font, ItemRenderer, TextureManager)} instead.
    */
   @Deprecated(forRemoval = true, since = "3.2.5")
-  default void draw(int x, int y, int z, MatrixStack matrices, TextRenderer textRenderer, ItemRenderer itemRenderer,
+  default void draw(int x, int y, int z, PoseStack poseStack, Font font, ItemRenderer itemRenderer,
       TextureManager textureManager) {
     throw new UnsupportedOperationException("Implementors PreviewRenderer must override the draw() method");
   }
@@ -119,15 +119,15 @@ public interface PreviewRenderer {
    *
    * @param x              X position of the preview's upper-right corner.
    * @param y              Y position of the preview's upper-right corner.
-   * @param matrices       The transformation matrices.
+   * @param poseStack      The transformation matrices.
    * @param itemRenderer   The item renderer.
-   * @param textRenderer   The text renderer.
+   * @param font           The text renderer.
    * @param textureManager The texture manager.
    * @since 3.2.5
    */
-  default void draw(int x, int y, MatrixStack matrices, TextRenderer textRenderer, ItemRenderer itemRenderer,
+  default void draw(int x, int y, PoseStack poseStack, Font font, ItemRenderer itemRenderer,
       TextureManager textureManager) {
-    this.draw(x, y, 0, matrices, textRenderer, itemRenderer, textureManager);
+    this.draw(x, y, 0, poseStack, font, itemRenderer, textureManager);
   }
 
   /**
@@ -135,18 +135,18 @@ public interface PreviewRenderer {
    *
    * @param x              X position of the preview's upper-right corner.
    * @param y              Y position of the preview's upper-right corner.
-   * @param matrices       The transformation matrices.
+   * @param poseStack      The transformation matrices.
    * @param itemRenderer   The item renderer.
-   * @param textRenderer   The text renderer.
+   * @param font           The text renderer.
    * @param textureManager The texture manager.
    * @param screen         The current screen this tooltip is a part of.
    * @param mouseX         The mouse X position.
    * @param mouseY         The mouse Y position.
    * @since 3.4.0
    */
-  default void draw(int x, int y, MatrixStack matrices, TextRenderer textRenderer, ItemRenderer itemRenderer,
+  default void draw(int x, int y, PoseStack poseStack, Font font, ItemRenderer itemRenderer,
       TextureManager textureManager, Screen screen, int mouseX, int mouseY) {
-    this.draw(x, y, matrices, textRenderer, itemRenderer, textureManager);
+    this.draw(x, y, poseStack, font, itemRenderer, textureManager);
   }
 
 }

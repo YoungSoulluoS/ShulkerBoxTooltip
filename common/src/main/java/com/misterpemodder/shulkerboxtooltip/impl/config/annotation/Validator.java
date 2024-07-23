@@ -1,6 +1,6 @@
 package com.misterpemodder.shulkerboxtooltip.impl.config.annotation;
 
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,5 +12,5 @@ import java.util.function.Function;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Validator {
-  Class<? extends Function<Object, Optional<Text>>> value();
+  Class<? extends Function<Object, Optional<Component>>> value();
 }

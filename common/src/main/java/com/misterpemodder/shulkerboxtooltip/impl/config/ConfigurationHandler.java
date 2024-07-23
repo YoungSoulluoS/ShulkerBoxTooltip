@@ -10,6 +10,7 @@ import com.misterpemodder.shulkerboxtooltip.impl.config.annotation.AutoTooltip;
 import com.misterpemodder.shulkerboxtooltip.impl.config.annotation.Validator;
 import com.misterpemodder.shulkerboxtooltip.impl.util.Key;
 import com.misterpemodder.shulkerboxtooltip.impl.util.NbtType;
+import com.mojang.blaze3d.platform.InputConstants;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData.ValidationException;
 import me.shedaniel.autoconfig.ConfigManager;
@@ -29,13 +30,12 @@ import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
 import me.shedaniel.clothconfig2.impl.builders.KeyCodeBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Language;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.locale.Language;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -71,19 +71,19 @@ public final class ConfigurationHandler {
 
     AutoConfig.getConfigHolder(Configuration.class).registerSaveListener((holder, config) -> {
       onSave();
-      return ActionResult.PASS;
+      return InteractionResult.PASS;
     });
     if (ShulkerBoxTooltip.isClient())
       ClientOnly.registerGui();
     return configuration;
   }
 
-  private static Optional<Text[]> splitTooltipKey(String key) {
-    String[] lines = Language.getInstance().get(key).split("\n");
-    Text[] tooltip = new Text[lines.length];
+  private static Optional<Component[]> splitTooltipKey(String key) {
+    String[] lines = Language.getInstance().getOrDefault(key).split("\n");
+    Component[] tooltip = new Component[lines.length];
 
     for (int i = 0, l = lines.length; i < l; ++i)
-      tooltip[i] = Text.literal(lines[i]);
+      tooltip[i] = Component.literal(lines[i]);
     return Optional.of(tooltip);
   }
 
@@ -105,19 +105,19 @@ public final class ConfigurationHandler {
           continue;
         field.setAccessible(true);
 
-        Optional<Text> errorMsg = getValidatorFunction(validator).apply(field.get(category));
+        Optional<Component> errorMsg = getValidatorFunction(validator).apply(field.get(category));
 
         if (errorMsg.isPresent())
           throw new ValidationException(
               "ShulkerBoxTooltip config field " + categoryName + "." + field.getName() + " is invalid: "
-                  + Language.getInstance().get(errorMsg.get().getString()));
+                  + Language.getInstance().getOrDefault(errorMsg.get().getString()));
       }
     } catch (ReflectiveOperationException | RuntimeException e) {
       throw new ValidationException(e);
     }
   }
 
-  private static Function<Object, Optional<Text>> getValidatorFunction(Validator validator) {
+  private static Function<Object, Optional<Component>> getValidatorFunction(Validator validator) {
     try {
       var constructor = validator.value().getDeclaredConstructor();
 
@@ -145,11 +145,11 @@ public final class ConfigurationHandler {
     ShulkerBoxTooltip.config.server = serverCategory;
   }
 
-  public static void readFromPacketBuf(Configuration config, PacketByteBuf buf) {
-    NbtCompound compound = buf.readNbt();
+  public static void readFromPacketBuf(Configuration config, FriendlyByteBuf buf) {
+    CompoundTag compound = buf.readNbt();
 
     if (compound != null && compound.contains("server", NbtType.COMPOUND)) {
-      NbtCompound serverTag = compound.getCompound("server");
+      CompoundTag serverTag = compound.getCompound("server");
 
       if (serverTag.contains("clientIntegration", NbtType.BYTE))
         config.server.clientIntegration = serverTag.getBoolean("clientIntegration");
@@ -159,9 +159,9 @@ public final class ConfigurationHandler {
     }
   }
 
-  public static void writeToPacketBuf(Configuration config, PacketByteBuf buf) {
-    NbtCompound compound = new NbtCompound();
-    NbtCompound serverTag = new NbtCompound();
+  public static void writeToPacketBuf(Configuration config, FriendlyByteBuf buf) {
+    CompoundTag compound = new CompoundTag();
+    CompoundTag serverTag = new CompoundTag();
 
     serverTag.putBoolean("clientIntegration", config.server.clientIntegration);
     serverTag.putString("enderChestSyncType", config.server.enderChestSyncType.name());
@@ -228,12 +228,12 @@ public final class ConfigurationHandler {
         Object defaults, GuiRegistryAccess guiRegistry) {
       if (field.isAnnotationPresent(ConfigEntry.Gui.Excluded.class))
         return Collections.emptyList();
-      KeyCodeBuilder builder = ConfigEntryBuilder.create().startKeyCodeField(Text.translatable(i18n),
-          Utils.getUnsafely(field, config, new Key(InputUtil.UNKNOWN_KEY)).get()).setDefaultValue(
+      KeyCodeBuilder builder = ConfigEntryBuilder.create().startKeyCodeField(Component.translatable(i18n),
+          Utils.getUnsafely(field, config, new Key(InputConstants.UNKNOWN)).get()).setDefaultValue(
           () -> ((Key) Utils.getUnsafely(field, defaults)).get());
 
       KeyCodeEntry entry = setKeySaveConsumer(builder,
-          newValue -> Utils.getUnsafely(field, config, new Key(InputUtil.UNKNOWN_KEY)).set(newValue)).build();
+          newValue -> Utils.getUnsafely(field, config, new Key(InputConstants.UNKNOWN)).set(newValue)).build();
 
       entry.setAllowMouse(false);
       return Collections.singletonList(entry);
@@ -260,7 +260,8 @@ public final class ConfigurationHandler {
           continue;
 
         guis.add(ConfigEntryBuilder.create()
-            .startSubCategory(Text.translatable("shulkerboxtooltip.colors." + id.getNamespace() + "." + id.getPath()),
+            .startSubCategory(
+                Component.translatable("shulkerboxtooltip.colors." + id.getNamespace() + "." + id.getPath()),
                 category.keys().entrySet().stream().map(entry -> colorKeyEntry(category, entry)).toList())
             .build());
       }
@@ -271,7 +272,7 @@ public final class ConfigurationHandler {
         Map.Entry<String, ColorKey> entry) {
       var colorKey = entry.getValue();
 
-      return ConfigEntryBuilder.create().startColorField(Text.translatable(category.keyUnlocalizedName(colorKey)),
+      return ConfigEntryBuilder.create().startColorField(Component.translatable(category.keyUnlocalizedName(colorKey)),
           colorKey.rgb()).setDefaultValue(colorKey.defaultRgb()).setSaveConsumer(colorKey::setRgb).build();
     }
 
@@ -279,7 +280,7 @@ public final class ConfigurationHandler {
      * A hack function that calls setSaveConsumer() or setKeySaveConsumer() on the key code builder
      * depending on which is implemented by cloth-config.
      */
-    private static KeyCodeBuilder setKeySaveConsumer(KeyCodeBuilder builder, Consumer<InputUtil.Key> consumer) {
+    private static KeyCodeBuilder setKeySaveConsumer(KeyCodeBuilder builder, Consumer<InputConstants.Key> consumer) {
       try {
         Method method = builder.getClass().getMethod("setSaveConsumer", Consumer.class);
         method.setAccessible(true);

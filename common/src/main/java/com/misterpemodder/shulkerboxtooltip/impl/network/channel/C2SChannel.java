@@ -9,11 +9,11 @@ import com.misterpemodder.shulkerboxtooltip.impl.network.message.MessageType;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 
 /**
  * Client-to-server channel wrapper.
@@ -30,7 +30,7 @@ public final class C2SChannel<MSG> extends Channel<MSG> {
    * @param id          The channel id, must be unique.
    * @param messageType The channel description.
    */
-  public C2SChannel(Identifier id, MessageType<MSG> messageType) {
+  public C2SChannel(ResourceLocation id, MessageType<MSG> messageType) {
     super(id, messageType);
     if (ShulkerBoxTooltip.isClient())
       this.serverRegistered = false;
@@ -41,7 +41,7 @@ public final class C2SChannel<MSG> extends Channel<MSG> {
    *
    * @param player The player.
    */
-  public void registerFor(ServerPlayerEntity player) {
+  public void registerFor(ServerPlayer player) {
     ServerNetworking.registerC2SReceiver(this.id, player, (sender, buf) -> {
       MSG message = this.messageType.decode(buf);
       MessageContext<MSG> context = new C2SMessageContext<>(sender, this);
@@ -55,7 +55,7 @@ public final class C2SChannel<MSG> extends Channel<MSG> {
    *
    * @param player The player.
    */
-  public void unregisterFor(ServerPlayerEntity player) {
+  public void unregisterFor(ServerPlayer player) {
     ServerNetworking.unregisterC2SReceiver(this.id, player);
   }
 
@@ -66,16 +66,16 @@ public final class C2SChannel<MSG> extends Channel<MSG> {
    */
   @Environment(EnvType.CLIENT)
   public void sendToServer(MSG message) {
-    ClientPlayNetworkHandler handler = MinecraftClient.getInstance().getNetworkHandler();
+    ClientPacketListener listener = Minecraft.getInstance().getConnection();
 
-    if (handler == null) {
+    if (listener == null) {
       ShulkerBoxTooltip.LOGGER.error("Cannot send message to the " + this.id + " channel while not in-game");
       return;
     }
-    PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
 
     this.messageType.encode(message, buf);
-    handler.sendPacket(ClientNetworking.createC2SPacket(this.id, buf));
+    listener.send(ClientNetworking.createC2SPacket(this.id, buf));
   }
 
   /**
@@ -83,7 +83,7 @@ public final class C2SChannel<MSG> extends Channel<MSG> {
    */
   @Environment(EnvType.CLIENT)
   public boolean canSendToServer() {
-    return this.serverRegistered && MinecraftClient.getInstance().getNetworkHandler() != null;
+    return this.serverRegistered && Minecraft.getInstance().getConnection() != null;
   }
 
   @Override

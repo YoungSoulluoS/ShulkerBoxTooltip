@@ -1,8 +1,8 @@
 package com.misterpemodder.shulkerboxtooltip.impl.util;
 
 import com.misterpemodder.shulkerboxtooltip.api.config.ItemStackMergingStrategy;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -11,12 +11,12 @@ import java.util.List;
 
 public class MergedItemStack implements Comparable<MergedItemStack> {
   private ItemStack merged;
-  private final DefaultedList<ItemStack> subItems;
+  private final NonNullList<ItemStack> subItems;
   private int firstSlot;
 
   public MergedItemStack(int slotCount) {
     this.merged = ItemStack.EMPTY;
-    this.subItems = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
+    this.subItems = NonNullList.withSize(slotCount, ItemStack.EMPTY);
     this.firstSlot = Integer.MAX_VALUE;
   }
 
@@ -39,9 +39,9 @@ public class MergedItemStack implements Comparable<MergedItemStack> {
     if (this.merged.isEmpty()) {
       this.merged = stack.copy();
       if (mergingStrategy == ItemStackMergingStrategy.IGNORE)
-        this.merged.setNbt(null);
+        this.merged.setTag(null);
     } else {
-      this.merged.increment(stack.getCount());
+      this.merged.grow(stack.getCount());
     }
   }
 
