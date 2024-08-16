@@ -15,7 +15,8 @@ loom {
     accessWidenerPath = project(':common').loom.accessWidenerPath
 
     forge {
-        accessTransformers = files('src/main/resources/META-INF/accesstransformer.cfg')
+        convertAccessWideners = true
+        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
         mixinConfig 'shulkerboxtooltip-common.mixins.json'
         mixinConfig 'shulkerboxtooltip-forge.mixins.json'
     }
@@ -69,16 +70,6 @@ remapJar {
     archiveClassifier.set(null)
 }
 
-// magical bit of config to get Forge somewhat working
-tasks.withType(net.fabricmc.loom.task.AbstractRemapJarTask).configureEach {
-    targetNamespace = "named"
-}
-configurations.all {
-    resolutionStrategy {
-        force 'net.sf.jopt-simple:jopt-simple:5.0.4'
-    }
-}
-
 jar {
     archiveClassifier.set('dev')
 }
@@ -110,6 +101,11 @@ components.java {
     withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
         skip()
     }
+}
+
+// Fixes compilation errors with Forge 1.20.6+
+configurations.configureEach {
+    resolutionStrategy.force("net.sf.jopt-simple:jopt-simple:5.0.4")
 }
 
 publishing {
