@@ -8,13 +8,15 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraftforge.network.ChannelBuilder;
 
 abstract class ForgeChannel<T> implements Channel<T> {
   protected final CustomPacketPayload.Type<Payload<T>> id;
   protected final MessageType<T> type;
   protected final StreamCodec<FriendlyByteBuf, Payload<T>> codec;
+  protected net.minecraftforge.network.Channel<Payload<T>> innerChannel;
   private boolean payloadTypeRegistered = false;
-
 
   protected ForgeChannel(ResourceLocation id, MessageType<T> type) {
     this.id = new CustomPacketPayload.Type<>(id);
@@ -33,17 +35,21 @@ abstract class ForgeChannel<T> implements Channel<T> {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void registerPayloadType() {
-    // payload registration is handled by the RegisterPayloadHandlersEvent
+    if (this.payloadTypeRegistered) {
+      return;
+    }
+    var c = ChannelBuilder.named(this.getId()) //
+        .optional() //
+        .payloadChannel() //
+        .any() //
+        .bidirectional() //
+        .add(this.id, this.codec, this::onReceive) //
+        .build();
+    this.innerChannel = (net.minecraftforge.network.Channel<Payload<T>>) (net.minecraftforge.network.Channel<?>) c;
+    this.payloadTypeRegistered = true;
   }
-
-  //  public void registerPayloadTypeDeferred(RegisterPayloadHandlersEvent event) {
-  //    if (this.payloadTypeRegistered) {
-  //      return;
-  //    }
-  //    event.registrar("1").optional().commonBidirectional(this.id, this.codec, this::onReceive);
-  //    this.payloadTypeRegistered = true;
-  //  }
 
   @Override
   public void onRegister(MessageContext<T> context) {
@@ -63,5 +69,5 @@ abstract class ForgeChannel<T> implements Channel<T> {
     return new Payload<>(this.id, this.type.decode(buf));
   }
 
-  protected abstract void onReceive(Payload<T> payload, Object /*IPayloadContext*/ context);
+  protected abstract void onReceive(Payload<T> payload, CustomPayloadEvent.Context context);
 }
