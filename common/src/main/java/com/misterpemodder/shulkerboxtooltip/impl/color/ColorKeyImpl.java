@@ -2,11 +2,37 @@ package com.misterpemodder.shulkerboxtooltip.impl.color;
 
 import com.misterpemodder.shulkerboxtooltip.api.color.ColorKey;
 import com.misterpemodder.shulkerboxtooltip.impl.util.ShulkerBoxTooltipUtil;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public record ColorKeyImpl(float[] rgbComponents, float[] defaultRgbComponents) implements ColorKey {
+  private static final Codec<Pair<ResourceLocation, String>> CATEGORY_AND_ID_CODEC = RecordCodecBuilder.create(
+      instance -> instance.group(ResourceLocation.CODEC.fieldOf("category").forGetter(Pair::getFirst),
+          Codec.STRING.fieldOf("id").forGetter(Pair::getSecond)).apply(instance, Pair::of));
+
+  private static final Codec<ColorKey> FULL_CODEC = CATEGORY_AND_ID_CODEC.flatXmap(
+      (Pair<ResourceLocation, String> categoryAndId) -> {
+        ResourceLocation category = categoryAndId.getFirst();
+        String id = categoryAndId.getSecond();
+        @Nullable ColorKey key = ColorRegistryImpl.INSTANCE.category(category).key(id);
+
+        if (key == null) {
+          return DataResult.error(() -> "Unknown color key " + id + " in category " + category);
+        } else {
+          return DataResult.success(key);
+        }
+      }, (ColorKey key) -> DataResult.error(() -> "Cannot encode color key " + key + " as a string"));
+
+  private static final Codec<ColorKey> INT_CODEC = Codec.INT.xmap(ColorKey::ofRgb, ColorKey::rgb);
+  public static final Codec<ColorKey> CODEC = Codec.withAlternative(FULL_CODEC, INT_CODEC);
+
   @Override
   public int rgb() {
     return ShulkerBoxTooltipUtil.componentsToRgb(this.rgbComponents());

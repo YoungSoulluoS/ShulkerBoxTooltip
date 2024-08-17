@@ -129,7 +129,7 @@ public class ShulkerBoxTooltipClient {
       return;
 
     PreviewContext context = PreviewContext.builder(stack).withOwner(client.player).build();
-    PreviewProvider provider = ShulkerBoxTooltipApi.getPreviewProviderForStack(stack);
+    PreviewProvider provider = ShulkerBoxTooltipApi.getPreviewProviderForStackWithOverrides(stack);
 
     if (provider == null)
       return;
@@ -152,7 +152,7 @@ public class ShulkerBoxTooltipClient {
 
   public static boolean isPreviewAvailable(PreviewContext context) {
     if (getConfig().preview.enable) {
-      PreviewProvider provider = ShulkerBoxTooltipApi.getPreviewProviderForStack(context.stack());
+      PreviewProvider provider = ShulkerBoxTooltipApi.getPreviewProviderForStackWithOverrides(context.stack());
 
       return provider != null && provider.shouldDisplay(context) && ShulkerBoxTooltipApi.getCurrentPreviewType(
           provider.isFullPreviewAvailable(context)) != PreviewType.NO_PREVIEW;
