@@ -28,7 +28,8 @@ public class ItemStackMixin {
     //noinspection UnreachableCode
     if (ShulkerBoxTooltipApi.isPreviewAvailable(context))
       cir.setReturnValue(Optional.of(
-          new PreviewTooltipComponent(ShulkerBoxTooltipApi.getPreviewProviderForStack(context.stack()), context)));
+          new PreviewTooltipComponent(ShulkerBoxTooltipApi.getPreviewProviderForStackWithOverrides(context.stack()),
+              context)));
   }
 
   @Inject(at = @At("RETURN"), method =

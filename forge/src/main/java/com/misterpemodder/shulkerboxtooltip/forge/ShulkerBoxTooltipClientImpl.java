@@ -52,7 +52,8 @@ public final class ShulkerBoxTooltipClientImpl extends ShulkerBoxTooltipClient {
 
     // Add the preview window at the beginning of the tooltip
     if (ShulkerBoxTooltipApi.isPreviewAvailable(context)) {
-      var data = new PreviewTooltipComponent(ShulkerBoxTooltipApi.getPreviewProviderForStack(context.stack()), context);
+      var data = new PreviewTooltipComponent(
+          ShulkerBoxTooltipApi.getPreviewProviderForStackWithOverrides(context.stack()), context);
 
       elements.add(1, Either.right(data));
     }
