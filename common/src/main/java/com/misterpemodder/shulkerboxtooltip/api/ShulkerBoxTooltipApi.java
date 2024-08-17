@@ -5,6 +5,7 @@ import com.misterpemodder.shulkerboxtooltip.api.color.ColorRegistry;
 import com.misterpemodder.shulkerboxtooltip.api.provider.PreviewProvider;
 import com.misterpemodder.shulkerboxtooltip.api.provider.PreviewProviderRegistry;
 import com.misterpemodder.shulkerboxtooltip.impl.network.ServerNetworking;
+import com.misterpemodder.shulkerboxtooltip.impl.provider.OverridingPreviewProvider;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.server.level.ServerPlayer;
@@ -56,15 +57,29 @@ import javax.annotation.Nullable;
  */
 public interface ShulkerBoxTooltipApi {
   /**
-   * Attempts to get the corresponding preview provider associated with the given item stack.
+   * Attempts to get the corresponding preview provider associated with the given item stack,
+   * ignoring data-driven overrides.
    *
    * @param stack The stack
-   * @return the associated {@link PreviewProvider} for the passed {@linkplain ItemStack}.
+   * @return the associated {@link PreviewProvider} for the passed {@linkplain ItemStack}
    * @since 2.0.0
    */
   @Nullable
   static PreviewProvider getPreviewProviderForStack(ItemStack stack) {
     return PreviewProviderRegistry.getInstance().get(stack);
+  }
+
+  /**
+   * Attempts to get the corresponding preview provider associated with the given item stack using
+   * data-driven overrides if available.
+   *
+   * @param stack The stack
+   * @return the associated {@link PreviewProvider} for the passed {@linkplain ItemStack}.
+   * @since 4.2.0
+   */
+  @Nullable
+  static PreviewProvider getPreviewProviderForStackWithOverrides(ItemStack stack) {
+    return OverridingPreviewProvider.maybeWrap(getPreviewProviderForStack(stack), stack);
   }
 
   /**
