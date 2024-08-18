@@ -1,3 +1,8 @@
+4.2.0+1.20.6:
+- Re-enable Forge support
+- Add data-driven preview overrides for map makers and servers, see https://github.com/MisterPeModder/ShulkerBoxTooltip/wiki/Data-Driven-Previews for more information.
+
+====================================================================================================
 4.1.4+1.20.6:
 - Added Mexican Spanish localization by TheLegendofSaram. (#163)
 
