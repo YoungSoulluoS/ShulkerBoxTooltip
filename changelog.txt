@@ -1,3 +1,9 @@
+5.1.0+1.21.1:
+- Updated to Minecraft 1.21.1 (#170)
+- Re-enable Forge support
+- Add data-driven preview overrides for map makers and servers, see https://github.com/MisterPeModder/ShulkerBoxTooltip/wiki/Data-Driven-Previews for more information.
+
+====================================f5================================================================
 5.0.4+1.20.6:
 - Fix crash on dedicated Quilt servers. (#169)
 
