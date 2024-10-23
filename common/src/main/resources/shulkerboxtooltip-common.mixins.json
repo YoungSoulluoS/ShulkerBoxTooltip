@@ -8,8 +8,7 @@
     "client.AbstractContainerScreenMixin",
     "client.ItemStackMixin",
     "client.KeyboardHandlerMixin",
-    "client.ShulkerBoxBlockMixin",
-    "client.TooltipRenderUtilMixin"
+    "client.ShulkerBoxBlockMixin"
   ],
   "mixins": [
   ],

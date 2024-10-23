@@ -13,7 +13,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -22,6 +22,11 @@ import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public abstract class BasePreviewRenderer implements PreviewRenderer {
+  private static final ResourceLocation SLOT_HIGHLIGHT_BACK_SPRITE = ResourceLocation.withDefaultNamespace(
+      "container/slot_highlight_back");
+  private static final ResourceLocation SLOT_HIGHLIGHT_FRONT_SPRITE = ResourceLocation.withDefaultNamespace(
+      "container/slot_highlight_front");
+
   protected PreviewType previewType;
   protected PreviewConfiguration config;
   protected int compactMaxRowSize;
@@ -178,16 +183,20 @@ public abstract class BasePreviewRenderer implements PreviewRenderer {
       graphics.renderTooltip(font, stack, mouseX, mouseY);
   }
 
-  protected void drawSlotHighlight(int x, int y, GuiGraphics graphics, int mouseX, int mouseY) {
+  protected void drawSlotHighlight(int x, int y, GuiGraphics graphics, int mouseX, int mouseY, Runnable render) {
     int slot = this.getSlotAt(mouseX - x, mouseY - y);
 
     if (slot >= 0 && slot < this.getInvSize()) {
       int maxRowSize = this.getMaxRowSize();
 
-      x = this.slotXOffset + x + this.slotWidth * (slot % maxRowSize);
-      y = this.slotYOffset + y + this.slotHeight * (slot / maxRowSize);
+      x = this.slotXOffset + x + this.slotWidth * (slot % maxRowSize) - 4;
+      y = this.slotYOffset + y + this.slotHeight * (slot / maxRowSize) - 4;
 
-      AbstractContainerScreen.renderSlotHighlight(graphics, x, y, 0);
+      graphics.blitSprite(RenderType::guiTextured, SLOT_HIGHLIGHT_BACK_SPRITE, x, y, 24, 24);
+      render.run();
+      graphics.blitSprite(RenderType::guiTexturedOverlay, SLOT_HIGHLIGHT_FRONT_SPRITE, x, y, 24, 24);
+    } else {
+      render.run();
     }
   }
 }

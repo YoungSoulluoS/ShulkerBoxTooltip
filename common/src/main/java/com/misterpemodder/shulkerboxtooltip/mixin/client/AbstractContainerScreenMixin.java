@@ -3,13 +3,14 @@ package com.misterpemodder.shulkerboxtooltip.mixin.client;
 import com.misterpemodder.shulkerboxtooltip.ShulkerBoxTooltipClient;
 import com.misterpemodder.shulkerboxtooltip.api.PreviewContext;
 import com.misterpemodder.shulkerboxtooltip.api.ShulkerBoxTooltipApi;
+import com.misterpemodder.shulkerboxtooltip.impl.hook.ContainerScreenDrawTooltip;
 import com.misterpemodder.shulkerboxtooltip.impl.hook.ContainerScreenLockTooltip;
 import com.misterpemodder.shulkerboxtooltip.impl.hook.GuiGraphicsExtensions;
-import com.misterpemodder.shulkerboxtooltip.impl.hook.ContainerScreenDrawTooltip;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -93,7 +94,7 @@ public class AbstractContainerScreenMixin implements ContainerScreenLockTooltip 
 
   @Override
   public void shulkerboxtooltip$lockTooltipPosition(GuiGraphics graphics, Font font, List<Component> text,
-      Optional<TooltipComponent> data, ItemStack stack, int x, int y) {
+      Optional<TooltipComponent> data, ItemStack stack, int x, int y, ResourceLocation backgroundTexture) {
     Slot mouseLockSlot = this.mouseLockSlot;
 
     if (ShulkerBoxTooltipClient.isLockPreviewKeyPressed()) {
@@ -129,7 +130,7 @@ public class AbstractContainerScreenMixin implements ContainerScreenLockTooltip 
     this.mouseLockSlot = mouseLockSlot;
 
     var self = (ContainerScreenDrawTooltip) this;
-    self.shulkerboxtooltip$drawMouseoverTooltip(graphics, font, text, data, stack, x, y);
+    self.shulkerboxtooltip$renderTooltip(graphics, font, text, data, stack, x, y, backgroundTexture);
   }
 
 }

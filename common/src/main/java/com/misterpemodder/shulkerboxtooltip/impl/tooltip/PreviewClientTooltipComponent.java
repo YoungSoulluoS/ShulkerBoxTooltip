@@ -8,8 +8,10 @@ import com.misterpemodder.shulkerboxtooltip.api.renderer.PreviewRenderer;
 import com.misterpemodder.shulkerboxtooltip.impl.config.Configuration.PreviewPosition;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import org.jetbrains.annotations.NotNull;
 
-public class PreviewClientTooltipComponent extends PositionAwareClientTooltipComponent {
+public class PreviewClientTooltipComponent implements ClientTooltipComponent {
   private final PreviewRenderer renderer;
   private final PreviewProvider provider;
   private final PreviewContext context;
@@ -29,27 +31,28 @@ public class PreviewClientTooltipComponent extends PositionAwareClientTooltipCom
   }
 
   @Override
-  public int getHeight() {
+  public int getHeight(@NotNull Font font) {
     if (ShulkerBoxTooltip.config.preview.position == PreviewPosition.INSIDE)
       return this.renderer.getHeight() + 2 + 4;
     return 0;
   }
 
   @Override
-  public int getWidth(Font font) {
+  public int getWidth(@NotNull Font font) {
     if (ShulkerBoxTooltip.config.preview.position == PreviewPosition.INSIDE)
       return this.renderer.getWidth() + 2;
     return 0;
   }
 
   @Override
-  public void renderImage(Font font, int x, int y, GuiGraphics graphics) {
-    this.drawAt(x, y, graphics, font, 0, 0);
+  public void renderImage(@NotNull Font font, int x, int y, int totalWidth, int totalHeight,
+      @NotNull GuiGraphics graphics) {
+    this.renderImageWithMouse(font, x, y, totalWidth, totalHeight, graphics, 0, 0);
   }
 
-  @Override
-  public void drawItemsWithTooltipPosition(Font font, int x, int y, GuiGraphics graphics, int tooltipTopY,
-      int tooltipBottomY, int mouseX, int mouseY) {
+  public void renderImageWithMouse(@NotNull Font font, int x, int y, int totalWidth, int totalHeight,
+      @NotNull GuiGraphics graphics, int mouseX, int mouseY) {
+
     PreviewPosition position = ShulkerBoxTooltip.config.preview.position;
 
     if (position != PreviewPosition.INSIDE) {
@@ -59,14 +62,11 @@ public class PreviewClientTooltipComponent extends PositionAwareClientTooltipCom
       int screenH = graphics.guiHeight();
 
       x = Math.min(x - 4, screenW - w);
-      y = tooltipBottomY;
+      y = totalHeight;
       if (position == PreviewPosition.OUTSIDE_TOP || (position == PreviewPosition.OUTSIDE && y + h > screenH))
-        y = tooltipTopY - h;
+        y = -h;
     }
-    this.drawAt(x, y, graphics, font, mouseX, mouseY);
-  }
 
-  private void drawAt(int x, int y, GuiGraphics graphics, Font font, int mouseX, int mouseY) {
     this.renderer.draw(x, y, graphics, font, mouseX, mouseY);
   }
 }
