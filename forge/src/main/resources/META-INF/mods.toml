@@ -15,13 +15,13 @@ logoFile = "icon.png"
 [[dependencies.shulkerboxtooltip]]
 modId = "forge"
 mandatory = true
-versionRange = "[41.0.15,)"
+versionRange = "[53.0.7,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.shulkerboxtooltip]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.21.1,)"
+versionRange = "[1.21.3,)"
 ordering = "NONE"
 side = "BOTH"
