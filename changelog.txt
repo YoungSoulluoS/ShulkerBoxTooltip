@@ -1,3 +1,11 @@
+5.2.0+1.21.3:
+- Updated to Minecraft 1.21.3.
+- Updated Vanilla theme to match new bundle preview style.
+- Fix rare errors on loading world in single-player due to integrated server and client trying to initialize plugins at the same time.
+- API: Added PreviewRenderer#getCompactMaxRowSize().
+- API: Added viewport width/height parameters to PreviewRenderer#draw(), deprecated old method.
+
+====================================================================================================
 5.1.1+1.21.1:
 - Added Japanese localization by yumunet. (#174)
 
