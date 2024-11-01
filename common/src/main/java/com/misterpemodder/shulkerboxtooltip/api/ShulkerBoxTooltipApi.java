@@ -58,7 +58,7 @@ import javax.annotation.Nullable;
  *       "com.mymod.MyModShulkerBoxTooltipPlugin"
  *     ]
  *   }
- * }</pre>
+ * }}</pre>
  *
  * @since 1.3.0
  */

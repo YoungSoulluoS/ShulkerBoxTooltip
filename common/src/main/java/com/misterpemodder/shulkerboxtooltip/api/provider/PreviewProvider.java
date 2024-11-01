@@ -39,6 +39,8 @@ public interface PreviewProvider {
   List<ItemStack> getInventory(PreviewContext context);
 
   /**
+   * Returns the maximum amount of slots this preview can display.
+   *
    * @param context The preview context.
    * @return The maximum inventory size for the given stack.
    * @since 2.0.0
@@ -68,6 +70,8 @@ public interface PreviewProvider {
   }
 
   /**
+   * Returns whether this provider supports full preview mode.
+   *
    * @param context The preview context.
    * @return If false, compact mode will be the only type of preview.
    * @since 2.0.0
@@ -88,6 +92,8 @@ public interface PreviewProvider {
   }
 
   /**
+   * The translation key for a hint that tells the user how to enter compact preview mode.
+   *
    * @param context The preview context.
    * @return The text to be displayed for the compact preview mode.
    * @since 2.0.0
@@ -97,6 +103,8 @@ public interface PreviewProvider {
   }
 
   /**
+   * The translation key for a hint that tells the user how to enter full preview mode.
+   *
    * @param context The preview context.
    * @return The text to be displayed for the full preview mode.
    * @since 2.0.0
@@ -106,6 +114,8 @@ public interface PreviewProvider {
   }
 
   /**
+   * The translation key for a hint that tells the user how to lock the tooltip window.
+   *
    * @param context The preview context.
    * @return The text to be displayed for the lock tooltip hint.
    * @since 3.4.0
@@ -127,6 +137,8 @@ public interface PreviewProvider {
   }
 
   /**
+   * Get the renderer to use for this type of preview.
+   *
    * @return A {@link PreviewRenderer} instance.
    * @since 1.3.0
    */

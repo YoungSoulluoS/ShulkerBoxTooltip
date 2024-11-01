@@ -201,6 +201,7 @@ public class BlockEntityPreviewProvider implements PreviewProvider {
   /**
    * If true, previews will not be shown when the {@code LootTable} tag inside {@code BlockEntityData} is present.
    *
+   * @return whether this container support loot tables.
    * @since 4.0.8
    */
   public boolean canUseLootTables() {

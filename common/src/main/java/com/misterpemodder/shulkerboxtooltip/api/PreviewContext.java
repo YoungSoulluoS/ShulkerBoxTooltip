@@ -50,14 +50,18 @@ public interface PreviewContext {
   Player owner();
 
   /**
-   * @return the configuration in use for this context.
+   * Provides access to the configuration in use for this context.
+   *
+   * @return the configuration.
    * @since 3.3.0
    */
   @Nonnull
   PreviewConfiguration config();
 
   /**
-   * @return the registry lookup for this context, if available.
+   * Returns the registry lookup for this context, if available.
+   *
+   * @return the registry lookup, or {@code null}.
    * @since 4.1.0
    */
   @Nullable
@@ -70,6 +74,8 @@ public interface PreviewContext {
    */
   interface Builder {
     /**
+     * Sets the owning player of the item stack.
+     *
      * @param owner The owner of the item stack, may be null.
      * @return this builder instance for chaining.
      * @since 4.1.0
