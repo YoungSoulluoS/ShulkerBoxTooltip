@@ -46,9 +46,16 @@ On Fabric, add your plugin class as an entry point of type `"shulkerboxtooltip"`
 }
 ```
 
-On Forge and NeoForge, register your plugin by adding an extension point in your mod's initialization code:
+On NeoForge, register your plugin by adding an extension point in your mod's initialization code:
 ```java
 ModLoadingContext.get().registerExtensionPoint(ShulkerBoxTooltipPlugin.class,
+    () -> new ShulkerBoxTooltipPlugin(MyModShulkerBoxTooltipPlugin::new));
+```
+
+On Forge, register your plugin by adding an extension point in your mod's initialization code:
+```java
+FMLJavaModLoadingContext context = /* get instance from your mod's constructor */
+context.registerExtensionPoint(ShulkerBoxTooltipPlugin.class,
     () -> new ShulkerBoxTooltipPlugin(MyModShulkerBoxTooltipPlugin::new));
 ```
 

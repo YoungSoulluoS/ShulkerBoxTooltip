@@ -17,7 +17,6 @@ import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEv
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
@@ -29,7 +28,7 @@ public final class ShulkerBoxTooltipClientImpl extends ShulkerBoxTooltipClient {
       ShulkerBoxTooltipClient.init();
 
       // Register the config screen
-      ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
+      ShulkerBoxTooltipImpl.INSTANCE.context.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
           () -> new ConfigScreenHandler.ConfigScreenFactory(
               (client, parent) -> new ConfigScreen<>(parent, ShulkerBoxTooltip.configTree,
                   ShulkerBoxTooltip.savedConfig, ConfigurationHandler::saveToFile)));

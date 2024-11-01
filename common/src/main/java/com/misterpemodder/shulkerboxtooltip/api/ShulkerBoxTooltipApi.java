@@ -31,10 +31,19 @@ import javax.annotation.Nullable;
  * }</pre>
  *
  * <p>
- * Registering a plugin (on Forge):
+ * Registering a plugin (on NeoForge):
  * </p>
  * <pre>{@code
  * ModLoadingContext.get().registerExtensionPoint(ShulkerBoxTooltipPlugin.class,
+ *     () -> new ShulkerBoxTooltipPlugin(MyModShulkerBoxTooltipPlugin::new));
+ * }</pre>
+ *
+ * <p>
+ * Registering a plugin (on Forge):
+ * </p>
+ * <pre>{@code
+ * FMLJavaModLoadingContext context = // get instance from your mod's constructor
+ * context.registerExtensionPoint(ShulkerBoxTooltipPlugin.class,
  *     () -> new ShulkerBoxTooltipPlugin(MyModShulkerBoxTooltipPlugin::new));
  * }</pre>
  *
@@ -49,7 +58,6 @@ import javax.annotation.Nullable;
  *       "com.mymod.MyModShulkerBoxTooltipPlugin"
  *     ]
  *   }
- * }
  * }</pre>
  *
  * @since 1.3.0
