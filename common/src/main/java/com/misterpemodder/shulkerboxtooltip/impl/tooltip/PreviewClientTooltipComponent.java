@@ -13,8 +13,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class PreviewClientTooltipComponent implements ClientTooltipComponent {
   private final PreviewRenderer renderer;
-  private final PreviewProvider provider;
-  private final PreviewContext context;
 
   public PreviewClientTooltipComponent(PreviewTooltipComponent data) {
     PreviewRenderer renderer = data.provider().getRenderer();
@@ -22,51 +20,59 @@ public class PreviewClientTooltipComponent implements ClientTooltipComponent {
     if (renderer == null)
       renderer = PreviewRenderer.getDefaultRendererInstance();
     this.renderer = renderer;
-    this.provider = data.provider();
-    this.context = data.context();
+    PreviewProvider provider = data.provider();
+    PreviewContext context = data.context();
 
-    renderer.setPreview(this.context, this.provider);
+    renderer.setPreview(context, provider);
     renderer.setPreviewType(
-        ShulkerBoxTooltipApi.getCurrentPreviewType(this.provider.isFullPreviewAvailable(this.context)));
+        ShulkerBoxTooltipApi.getCurrentPreviewType(provider.isFullPreviewAvailable(context)));
   }
 
   @Override
   public int getHeight(@NotNull Font font) {
     if (ShulkerBoxTooltip.config.preview.position == PreviewPosition.INSIDE)
-      return this.renderer.getHeight() + 2 + 4;
+      return this.renderer.getHeight() + 4;
     return 0;
   }
 
   @Override
   public int getWidth(@NotNull Font font) {
     if (ShulkerBoxTooltip.config.preview.position == PreviewPosition.INSIDE)
-      return this.renderer.getWidth() + 2;
+      return this.renderer.getWidth();
     return 0;
   }
 
   @Override
   public void renderImage(@NotNull Font font, int x, int y, int totalWidth, int totalHeight,
       @NotNull GuiGraphics graphics) {
-    this.renderImageWithMouse(font, x, y, totalWidth, totalHeight, graphics, 0, 0);
+    this.renderImageExtended(font, x, y, totalWidth, totalHeight, graphics, 0, 0, Integer.MIN_VALUE);
   }
 
-  public void renderImageWithMouse(@NotNull Font font, int x, int y, int totalWidth, int totalHeight,
-      @NotNull GuiGraphics graphics, int mouseX, int mouseY) {
+  public void renderImageExtended(@NotNull Font font, int x, int y, int totalWidth, int totalHeight,
+      @NotNull GuiGraphics graphics, int mouseX, int mouseY, int tooltipTopY) {
 
     PreviewPosition position = ShulkerBoxTooltip.config.preview.position;
+    int viewportHeight = this.renderer.getHeight();
 
-    if (position != PreviewPosition.INSIDE) {
-      int h = this.renderer.getHeight();
-      int w = this.renderer.getWidth();
-      int screenW = graphics.guiWidth();
+    if (tooltipTopY == Integer.MIN_VALUE)
+      // Fall back to "inside" if the tooltip Y position was not captured
+      position = PreviewPosition.INSIDE;
+
+    if (position == PreviewPosition.OUTSIDE) {
       int screenH = graphics.guiHeight();
-
-      x = Math.min(x - 4, screenW - w);
-      y = totalHeight;
-      if (position == PreviewPosition.OUTSIDE_TOP || (position == PreviewPosition.OUTSIDE && y + h > screenH))
-        y = -h;
+      position = tooltipTopY + totalHeight + viewportHeight > screenH ?
+          PreviewPosition.OUTSIDE_TOP :
+          PreviewPosition.OUTSIDE_BOTTOM;
     }
 
-    this.renderer.draw(x, y, graphics, font, mouseX, mouseY);
+    if (position == PreviewPosition.OUTSIDE_TOP) {
+      x -= 4;
+      y = tooltipTopY - viewportHeight - 4;
+    } else if (position == PreviewPosition.OUTSIDE_BOTTOM) {
+      x -= 4;
+      y = tooltipTopY + totalHeight + 4;
+    }
+
+    this.renderer.draw(x, y, totalWidth, viewportHeight, graphics, font, mouseX, mouseY);
   }
 }

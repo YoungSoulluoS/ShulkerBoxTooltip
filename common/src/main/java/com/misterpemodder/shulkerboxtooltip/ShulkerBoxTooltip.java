@@ -82,7 +82,7 @@ public class ShulkerBoxTooltip implements ShulkerBoxTooltipApi {
         .register("dropper", 3, DropperBlockEntity::new, Blocks.DROPPER)
         .register("dispenser", 3, DispenserBlockEntity::new, Blocks.DISPENSER)
         .register("hopper", 5, HopperBlockEntity::new, Blocks.HOPPER)
-        .register("brewing_stand", 7, BrewingStandBlockEntity::new, Blocks.BREWING_STAND)
+        .register("brewing_stand", 5, BrewingStandBlockEntity::new, Blocks.BREWING_STAND)
         .register("chiseled_bookshelf", 3, ChiseledBookShelfBlockEntity::new, Blocks.CHISELED_BOOKSHELF)
         .register("decorated_pot", 1, DecoratedPotBlockEntity::new, Blocks.DECORATED_POT);
 

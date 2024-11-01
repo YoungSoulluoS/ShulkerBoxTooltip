@@ -46,13 +46,24 @@ public interface PreviewProvider {
   int getInventoryMaxSize(PreviewContext context);
 
   /**
-   * The maximum number of item stacks to be displayed in a row.
+   * The maximum number of item stacks to be displayed in a row in full preview mode.
    *
    * @param context The preview context.
    * @return the row size, defaults to the max row size in config if 0.
    * @since 2.0.0
    */
   default int getMaxRowSize(PreviewContext context) {
+    return 0;
+  }
+
+  /**
+   * The maximum number of item stacks to be displayed in a row in compact preview mode.
+   *
+   * @param context The preview context.
+   * @return the row size in compact mode, defaults to the max row size in config if 0.
+   * @since 5.2.0
+   */
+  default int getCompactMaxRowSize(PreviewContext context) {
     return 0;
   }
 

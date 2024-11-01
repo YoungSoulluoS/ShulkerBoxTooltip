@@ -100,6 +100,28 @@ public interface PreviewRenderer {
    * @param mouseX   The X position of the mouse cursor, relative to the current active Screen.
    * @param mouseY   The Y position of the mouse cursor, relative to the current active Screen.
    * @since 4.0.0
+   * @deprecated Use {@link #draw(int, int, int, int, GuiGraphics, Font, int, int)} instead.
    */
-  void draw(int x, int y, GuiGraphics graphics, Font font, int mouseX, int mouseY);
+  @Deprecated(forRemoval = true, since = "5.2.0")
+  default void draw(int x, int y, GuiGraphics graphics, Font font, int mouseX, int mouseY) {
+    throw new UnsupportedOperationException("Method not implemented");
+  }
+
+  /**
+   * Renders the preview at the given coordinates.
+   *
+   * @param x              X position of the preview's upper-right corner.
+   * @param y              Y position of the preview's upper-right corner.
+   * @param viewportWidth  Number of pixels available for rendering the preview in the X axis.
+   * @param viewportHeight Number of pixels available for rendering the preview in the Y axis.
+   * @param graphics       Context about the current matrices and more.
+   * @param font           The text renderer.
+   * @param mouseX         The X position of the mouse cursor, relative to the current active Screen.
+   * @param mouseY         The Y position of the mouse cursor, relative to the current active Screen.
+   * @since 5.2.0
+   */
+  default void draw(int x, int y, int viewportWidth, int viewportHeight, GuiGraphics graphics, Font font, int mouseX,
+      int mouseY) {
+    this.draw(x, y, graphics, font, mouseX, mouseY);
+  }
 }

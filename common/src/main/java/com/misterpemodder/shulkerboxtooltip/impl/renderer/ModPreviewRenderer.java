@@ -2,20 +2,25 @@ package com.misterpemodder.shulkerboxtooltip.impl.renderer;
 
 import com.misterpemodder.shulkerboxtooltip.api.PreviewType;
 import com.misterpemodder.shulkerboxtooltip.api.color.ColorKey;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 import static com.misterpemodder.shulkerboxtooltip.impl.util.ShulkerBoxTooltipUtil.id;
 
 @Environment(EnvType.CLIENT)
 public class ModPreviewRenderer extends BasePreviewRenderer {
-  private static final ResourceLocation DEFAULT_TEXTURE_LIGHT = id("shulker_box_tooltip");
   public static final ModPreviewRenderer INSTANCE = new ModPreviewRenderer();
+
+  private static final ResourceLocation DEFAULT_TEXTURE_LIGHT = id("shulker_box_tooltip");
+  private static final ResourceLocation SLOT_HIGHLIGHT_BACK_SPRITE = ResourceLocation.withDefaultNamespace(
+      "container/slot_highlight_back");
+  private static final ResourceLocation SLOT_HIGHLIGHT_FRONT_SPRITE = ResourceLocation.withDefaultNamespace(
+      "container/slot_highlight_front");
 
   ModPreviewRenderer() {
     super(18, 18, 8, 8);
@@ -29,6 +34,12 @@ public class ModPreviewRenderer extends BasePreviewRenderer {
   @Override
   public int getHeight() {
     return 14 + (int) Math.ceil(this.getInvSize() / (double) this.getMaxRowSize()) * 18;
+  }
+
+  private int getInvSize() {
+    return this.previewType == PreviewType.COMPACT ?
+        Math.max(1, this.compactItems.size()) :
+        this.provider.getInventoryMaxSize(this.previewContext);
   }
 
   /**
@@ -62,12 +73,31 @@ public class ModPreviewRenderer extends BasePreviewRenderer {
   }
 
   @Override
-  public void draw(int x, int y, GuiGraphics graphics, Font font, int mouseX, int mouseY) {
-    if (this.items.isEmpty() || this.previewType == PreviewType.NO_PREVIEW)
+  public void draw(int x, int y, int viewportWidth, int viewportHeight, GuiGraphics graphics, Font font, int mouseX,
+      int mouseY) {
+    if (this.compactItems.isEmpty() || this.previewType == PreviewType.NO_PREVIEW)
       return;
-    RenderSystem.enableDepthTest();
     this.drawBackground(x, y, graphics);
-    this.drawSlotHighlight(x, y, graphics, mouseX, mouseY, () -> this.drawItems(x, y, graphics, font));
+    this.drawSlots(x, y, graphics, font, mouseX, mouseY, Integer.MAX_VALUE);
     this.drawInnerTooltip(x, y, graphics, font, mouseX, mouseY);
+  }
+
+  @Override
+  protected void drawSlot(ItemStack stack, int x, int y, GuiGraphics graphics, Font font, int slot,
+      boolean isHighlighted, boolean shortItemCount) {
+    int maxRowSize = this.getMaxRowSize();
+    int sx = this.slotXOffset + x + this.slotWidth * (slot % maxRowSize);
+    int sy = this.slotYOffset + y + this.slotHeight * (slot / maxRowSize);
+
+    if (isHighlighted) {
+      graphics.blitSprite(RenderType::guiTextured, SLOT_HIGHLIGHT_BACK_SPRITE, sx - 4, sy - 4, 24, 24);
+    }
+
+    if (!stack.isEmpty())
+      this.drawItem(stack, sx, sy, graphics, font, shortItemCount);
+
+    if (isHighlighted) {
+      graphics.blitSprite(RenderType::guiTexturedOverlay, SLOT_HIGHLIGHT_FRONT_SPRITE, sx - 4, sy - 4, 24, 24);
+    }
   }
 }

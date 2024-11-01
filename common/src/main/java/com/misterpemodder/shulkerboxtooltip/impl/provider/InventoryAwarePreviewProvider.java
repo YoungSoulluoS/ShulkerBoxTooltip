@@ -17,7 +17,7 @@ public class InventoryAwarePreviewProvider<I extends Container> extends BlockEnt
   private final ThreadLocal<I> cachedInventory = ThreadLocal.withInitial(() -> null);
 
   public InventoryAwarePreviewProvider(int maxRowSize, Supplier<? extends I> inventoryFactory) {
-    super(27, false, maxRowSize);
+    super(27, false, maxRowSize, maxRowSize);
     this.inventoryFactory = inventoryFactory;
   }
 

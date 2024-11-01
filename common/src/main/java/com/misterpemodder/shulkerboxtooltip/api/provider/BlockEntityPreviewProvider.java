@@ -38,6 +38,7 @@ public class BlockEntityPreviewProvider implements PreviewProvider {
   private final int defaultMaxInvSize;
   private final boolean defaultCanUseLootTables;
   private final int defaultMaxRowSize;
+  private final int defaultCompactMaxRowSize;
 
   /**
    * Creates a BlockEntityPreviewProvider instance.
@@ -55,6 +56,7 @@ public class BlockEntityPreviewProvider implements PreviewProvider {
     this.defaultMaxInvSize = defaultMaxInvSize;
     this.defaultCanUseLootTables = defaultCanUseLootTables;
     this.defaultMaxRowSize = 9;
+    this.defaultCompactMaxRowSize = 0;
   }
 
   /**
@@ -75,6 +77,30 @@ public class BlockEntityPreviewProvider implements PreviewProvider {
     this.defaultMaxInvSize = defaultMaxInvSize;
     this.defaultCanUseLootTables = defaultCanUseLootTables;
     this.defaultMaxRowSize = defaultMaxRowSize <= 0 ? 9 : defaultMaxRowSize;
+    this.defaultCompactMaxRowSize = 0;
+  }
+
+  /**
+   * Creates a BlockEntityPreviewProvider instance.
+   *
+   * @param defaultMaxInvSize        The maximum preview inventory size of the item
+   *                                 (maybe lower than the actual inventory size).
+   *                                 If the inventory size isn't constant,
+   *                                 override {@link #getInventoryMaxSize(PreviewContext)}
+   *                                 and use {@code maxInvSize} as a default value.
+   * @param defaultCanUseLootTables  If true, previews will not be shown when the {@code LootTable}
+   *                                 tag inside {@code BlockEntityData} is present.
+   * @param defaultMaxRowSize        The maximum number of item stacks to be displayed in a row in full preview mode.
+   *                                 If less or equal to zero, defaults to 9.
+   * @param defaultCompactMaxRowSize The maximum number of item stacks to be displayed in a row in compact preview mode.
+   * @since 5.2.0
+   */
+  public BlockEntityPreviewProvider(int defaultMaxInvSize, boolean defaultCanUseLootTables, int defaultMaxRowSize,
+      int defaultCompactMaxRowSize) {
+    this.defaultMaxInvSize = defaultMaxInvSize;
+    this.defaultCanUseLootTables = defaultCanUseLootTables;
+    this.defaultMaxRowSize = defaultMaxRowSize <= 0 ? 9 : defaultMaxRowSize;
+    this.defaultCompactMaxRowSize = defaultCompactMaxRowSize;
   }
 
   @Override
@@ -165,6 +191,11 @@ public class BlockEntityPreviewProvider implements PreviewProvider {
   @Override
   public int getMaxRowSize(PreviewContext context) {
     return this.defaultMaxRowSize;
+  }
+
+  @Override
+  public int getCompactMaxRowSize(PreviewContext context) {
+    return this.defaultCompactMaxRowSize;
   }
 
   /**

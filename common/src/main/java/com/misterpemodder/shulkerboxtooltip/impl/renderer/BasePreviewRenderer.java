@@ -13,19 +13,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public abstract class BasePreviewRenderer implements PreviewRenderer {
-  private static final ResourceLocation SLOT_HIGHLIGHT_BACK_SPRITE = ResourceLocation.withDefaultNamespace(
-      "container/slot_highlight_back");
-  private static final ResourceLocation SLOT_HIGHLIGHT_FRONT_SPRITE = ResourceLocation.withDefaultNamespace(
-      "container/slot_highlight_front");
 
   protected PreviewType previewType;
   protected PreviewConfiguration config;
@@ -33,16 +27,18 @@ public abstract class BasePreviewRenderer implements PreviewRenderer {
   protected int maxRowSize;
   protected ResourceLocation textureOverride;
   protected PreviewProvider provider;
-  protected List<MergedItemStack> items;
+  protected List<ItemStack> fullItems;
+  protected List<MergedItemStack> compactItems;
   protected PreviewContext previewContext;
 
-  private final int slotWidth;
-  private final int slotHeight;
-  private final int slotXOffset;
-  private final int slotYOffset;
+  protected final int slotWidth;
+  protected final int slotHeight;
+  protected final int slotXOffset;
+  protected final int slotYOffset;
 
   protected BasePreviewRenderer(int slotWidth, int slotHeight, int slotXOffset, int slotYOffset) {
-    this.items = new ArrayList<>();
+    this.fullItems = List.of();
+    this.compactItems = List.of();
     this.previewType = PreviewType.FULL;
     this.maxRowSize = 9;
 
@@ -62,11 +58,6 @@ public abstract class BasePreviewRenderer implements PreviewRenderer {
     return this.previewType == PreviewType.COMPACT ? this.compactMaxRowSize : this.maxRowSize;
   }
 
-  protected int getInvSize() {
-    return this.previewType == PreviewType.COMPACT ? Math.max(1, this.items.size()) : this.provider.getInventoryMaxSize(
-        this.previewContext);
-  }
-
   @Override
   public void setPreviewType(PreviewType type) {
     this.previewType = type;
@@ -74,19 +65,22 @@ public abstract class BasePreviewRenderer implements PreviewRenderer {
 
   @Override
   public void setPreview(PreviewContext context, PreviewProvider provider) {
-    List<ItemStack> inventory = provider.getInventory(context);
     int rowSize = provider.getMaxRowSize(context);
+    int compactRowSize = provider.getCompactMaxRowSize(context);
 
     this.config = context.config();
-    this.compactMaxRowSize = this.config.defaultMaxRowSize();
-    if (this.compactMaxRowSize <= 0)
-      this.compactMaxRowSize = 9;
+    if (compactRowSize <= 0)
+      compactRowSize = this.config.defaultMaxRowSize();
+    if (compactRowSize <= 0)
+      compactRowSize = 9;
     if (rowSize <= 0)
-      rowSize = this.compactMaxRowSize;
+      rowSize = compactRowSize;
     this.maxRowSize = rowSize;
+    this.compactMaxRowSize = compactRowSize;
     this.textureOverride = provider.getTextureOverride(context);
     this.provider = provider;
-    this.items = MergedItemStack.mergeInventory(inventory, provider.getInventoryMaxSize(context),
+    this.fullItems = provider.getInventory(context);
+    this.compactItems = MergedItemStack.mergeInventory(this.fullItems, provider.getInventoryMaxSize(context),
         this.config.itemStackMergingStrategy());
     this.previewContext = context;
   }
@@ -96,7 +90,7 @@ public abstract class BasePreviewRenderer implements PreviewRenderer {
    *
    * @return The slot id at the given coordinates, or -1 if not found.
    */
-  private int getSlotAt(int x, int y) {
+  protected int getSlotAt(int x, int y) {
     int slot = -1;
 
     // Get the slot id at the given coordinates if X and Y are in bounds of the preview window
@@ -121,25 +115,41 @@ public abstract class BasePreviewRenderer implements PreviewRenderer {
     int slot = this.getSlotAt(x, y);
 
     if (this.previewType == PreviewType.COMPACT) {
-      if (slot < 0 || slot >= this.items.size())
+      if (slot < 0 || slot >= this.compactItems.size())
         return ItemStack.EMPTY;
-      MergedItemStack merged = this.items.get(slot);
+      MergedItemStack merged = this.compactItems.get(slot);
 
       return merged == null ? ItemStack.EMPTY : merged.get();
-    } else {
-      for (MergedItemStack merged : this.items) {
-        ItemStack stack = merged.getSubStack(slot);
-        if (!stack.isEmpty())
-          return stack;
+    } else if (slot >= 0 && slot < this.fullItems.size()) {
+      return this.fullItems.get(slot);
+    }
+    return ItemStack.EMPTY;
+  }
+
+  protected void drawSlots(int x, int y, GuiGraphics graphics, Font font, int mouseX, int mouseY, int maxSlot) {
+    int highlightedSlot = this.getSlotAt(mouseX - x, mouseY - y);
+
+    if (this.previewType == PreviewType.COMPACT) {
+      boolean shortItemCounts = this.config.shortItemCounts();
+
+      for (int slot = 0, size = this.compactItems.size(); slot < size; ++slot) {
+        if (slot <= maxSlot)
+          this.drawSlot(this.compactItems.get(slot).get(), x, y, graphics, font, slot, highlightedSlot == slot,
+              shortItemCounts);
       }
-      return ItemStack.EMPTY;
+    } else {
+      for (int slot = 0, size = this.fullItems.size(); slot < size; ++slot) {
+        if (slot <= maxSlot)
+          this.drawSlot(this.fullItems.get(slot), x, y, graphics, font, slot, highlightedSlot == slot, false);
+      }
     }
   }
 
-  private void drawItem(ItemStack stack, int x, int y, GuiGraphics graphics, Font font, int slot,
-      boolean shortItemCount) {
+  protected abstract void drawSlot(ItemStack stack, int x, int y, GuiGraphics graphics, Font font, int slot,
+      boolean isHighlighted, boolean shortItemCount);
+
+  protected void drawItem(ItemStack stack, int x, int y, GuiGraphics graphics, Font font, boolean shortItemCount) {
     String countLabel = "";
-    int maxRowSize = this.getMaxRowSize();
 
     // stack size might exceed the maximum, so we create our own count label instead of the default
     if (stack.getCount() != 1) {
@@ -149,29 +159,9 @@ public abstract class BasePreviewRenderer implements PreviewRenderer {
         countLabel = String.valueOf(stack.getCount());
     }
 
-    x = this.slotXOffset + x + this.slotWidth * (slot % maxRowSize);
-    y = this.slotYOffset + y + this.slotHeight * (slot / maxRowSize);
-
     graphics.renderItem(stack, x, y);
     graphics.renderItemDecorations(font, stack, x, y, countLabel);
   }
-
-  protected void drawItems(int x, int y, GuiGraphics graphics, Font font) {
-    if (this.previewType == PreviewType.COMPACT) {
-      boolean shortItemCounts = this.config.shortItemCounts();
-
-      for (int slot = 0, size = this.items.size(); slot < size; ++slot) {
-        this.drawItem(this.items.get(slot).get(), x, y, graphics, font, slot, shortItemCounts);
-      }
-    } else {
-      for (MergedItemStack compactor : this.items) {
-        for (int slot = 0, size = compactor.size(); slot < size; ++slot) {
-          this.drawItem(compactor.getSubStack(slot), x, y, graphics, font, slot, false);
-        }
-      }
-    }
-  }
-
 
   /**
    * Draw the tooltip that may be show when hovering a preview within a locked tooltip.
@@ -181,22 +171,5 @@ public abstract class BasePreviewRenderer implements PreviewRenderer {
 
     if (!stack.isEmpty())
       graphics.renderTooltip(font, stack, mouseX, mouseY);
-  }
-
-  protected void drawSlotHighlight(int x, int y, GuiGraphics graphics, int mouseX, int mouseY, Runnable render) {
-    int slot = this.getSlotAt(mouseX - x, mouseY - y);
-
-    if (slot >= 0 && slot < this.getInvSize()) {
-      int maxRowSize = this.getMaxRowSize();
-
-      x = this.slotXOffset + x + this.slotWidth * (slot % maxRowSize) - 4;
-      y = this.slotYOffset + y + this.slotHeight * (slot / maxRowSize) - 4;
-
-      graphics.blitSprite(RenderType::guiTextured, SLOT_HIGHLIGHT_BACK_SPRITE, x, y, 24, 24);
-      render.run();
-      graphics.blitSprite(RenderType::guiTexturedOverlay, SLOT_HIGHLIGHT_FRONT_SPRITE, x, y, 24, 24);
-    } else {
-      render.run();
-    }
   }
 }

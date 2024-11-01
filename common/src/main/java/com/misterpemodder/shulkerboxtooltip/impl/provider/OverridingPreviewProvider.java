@@ -35,15 +35,17 @@ public class OverridingPreviewProvider implements PreviewProvider {
   }
 
   private record PreviewOverrides(Optional<Boolean> shouldDisplay, Optional<Integer> inventoryMaxSize,
-                                  Optional<Integer> maxRowSize, Optional<Boolean> fullPreviewAvailable,
-                                  Optional<Boolean> showTooltipHints, Optional<String> tooltipHintLangKey,
-                                  Optional<String> fullTooltipHintLangKey, Optional<String> lockKeyTooltipHintLangKey,
-                                  Optional<ColorKey> windowColor, Optional<ResourceLocation> texture,
-                                  Optional<Boolean> canInsertItems, Optional<Boolean> canExtractItems) {
+                                  Optional<Integer> maxRowSize, Optional<Integer> compactMaxRowSize,
+                                  Optional<Boolean> fullPreviewAvailable, Optional<Boolean> showTooltipHints,
+                                  Optional<String> tooltipHintLangKey, Optional<String> fullTooltipHintLangKey,
+                                  Optional<String> lockKeyTooltipHintLangKey, Optional<ColorKey> windowColor,
+                                  Optional<ResourceLocation> texture, Optional<Boolean> canInsertItems,
+                                  Optional<Boolean> canExtractItems) {
     public static final MapCodec<PreviewOverrides> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.BOOL.lenientOptionalFieldOf("should_display").forGetter(PreviewOverrides::shouldDisplay),
             Codec.INT.lenientOptionalFieldOf("inventory_max_size").forGetter(PreviewOverrides::inventoryMaxSize),
             Codec.INT.lenientOptionalFieldOf("max_row_size").forGetter(PreviewOverrides::maxRowSize),
+            Codec.INT.lenientOptionalFieldOf("compact_max_row_size").forGetter(PreviewOverrides::compactMaxRowSize),
             Codec.BOOL.lenientOptionalFieldOf("full_preview_available").forGetter(PreviewOverrides::fullPreviewAvailable),
             Codec.BOOL.lenientOptionalFieldOf("show_tooltip_hints").forGetter(PreviewOverrides::showTooltipHints),
             Codec.STRING.lenientOptionalFieldOf("tooltip_hint_lang_key").forGetter(PreviewOverrides::tooltipHintLangKey),
@@ -95,6 +97,11 @@ public class OverridingPreviewProvider implements PreviewProvider {
   @Override
   public int getMaxRowSize(PreviewContext context) {
     return this.overrides.maxRowSize.orElseGet(() -> this.delegate.getMaxRowSize(context));
+  }
+
+  @Override
+  public int getCompactMaxRowSize(PreviewContext context) {
+    return this.overrides.compactMaxRowSize.orElseGet(() -> this.delegate.getCompactMaxRowSize(context));
   }
 
   @Override
