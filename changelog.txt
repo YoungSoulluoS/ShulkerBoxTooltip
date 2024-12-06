@@ -1,3 +1,7 @@
+5.2.2+1.21.4:
+- Updated to Minecraft 1.21.4.
+
+====================================================================================================
 5.2.1+1.21.3:
 - Fixed crashes on dedicated servers when player with the mod installed joined.
 (#184) (#186)
